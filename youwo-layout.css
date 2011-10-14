@@ -1,0 +1,198 @@
+/*
+#page {
+	width: 750px;
+	background: url(./images/page_bg01.gif) repeat-y;
+	margin: 0px auto;
+}
+#content {
+	margin: 1px 8px 0px;
+	background: #fff url(./images/sideBar_bg01.gif) repeat-y;
+	overflow: hidden;
+	zoom: 1;
+}*/
+.columnlist {
+	margin: 0px 6px 0px 7px;
+}
+.columnlist .title,
+{
+	width: 21px;height: 56px;
+	background: url(./images/sideBar_bg02.gif) no-repeat;
+}
+
+.columnlist .title .text,
+investigate .title .text {
+	width: 200px;
+	margin-top: 7px;
+	*margin-top: 8px;
+}
+.columnlist .body {
+	padding-top: 4px;
+}
+.columnlist .body p {
+	margin: 4px 18px 10px;
+}
+.columnlist .body li {
+	height: 20px;
+	list-style-type: none;
+	padding-left: 30px;
+	background: url(./images/icon_list01.gif) no-repeat 16px 6px;
+}
+.columnlist .body2 li {
+	list-style-type: none;
+	padding-left: 30px;
+	background: url(./images/icon_list01.gif) no-repeat 16px 6px;
+}
+.columnlist .body .photo {
+	height: 87px;
+	background: url(./images/line3.gif) repeat-x left bottom;
+	padding: 0px;
+}
+.columnlist .body .photo div {
+	float: left;
+}
+.columnlist .body .photo .photobox {
+	width: 70px; height: 70px;
+	padding: 1px;
+	border: 1px solid #baccd8;
+	margin-left:10px;
+	*margin-left:5px;
+	margin-top: 4px;
+}
+.columnlist .body .photo .text {
+	width: 102px; height: 80px;
+	margin: 4px 0px 0px 5px;
+}
+#contentlist {
+	width: 700px;
+	float: right;
+	border-top: 1px solid #c7c7c7;
+}
+#contentlist .contentgroup {
+	height: 392px;
+}
+#contentlist .row1 {
+	margin-top: 20px;
+	width: 700px; height: 200px;
+}
+
+#contentlist .row2 {
+	margin-top: 20px;
+	width: 700px; 
+	height: 300px;
+}
+
+#contentlist .column1 {
+	width: 700px;
+	height: 150px;
+	float: left;
+	border: 1px solid #d8d8d8;
+}
+#contentlist .column2 {
+	margin-top: 10px;
+	width: 700px;
+	height: 180px;
+	float: right;
+	border: 1px solid #d8d8d8;
+}
+
+#contentlist .column3 {
+	margin-top: 10px;
+	width: 700px;
+	height: 180px;
+	float: left;
+	border: 1px solid #d8d8d8;
+}
+#contentlist .column4 {
+	margin-top: 10px;
+	width: 700px;
+	height: 310px;
+	float: left;
+	border: 1px solid #d8d8d8;
+}
+
+#contentlist .title {
+	height: 28px;
+}
+#contentlist .title .text {
+	width: 286px;
+	padding: 2px 0px 0px 0px;
+}
+#contentlist .title .link {
+	padding: 14px 0px 0px 0px;
+}
+#contentlist .title .icon {
+	padding-top: 13px;
+	*padding-top: 12px;
+	padding-left: 3px;
+}
+#contentlist .content .pic {
+	padding-top: 5px;
+	padding-left: 5px;
+	float: left;
+}
+#contentlist .pic img {
+	float: left;
+	width: 30px; height: 30px;
+	margin-top: 5px;
+}
+
+#contentlist .title {
+	margin-left: 40px;
+	margin-top: 5px;
+	height:35px; 
+	font-family:"黑体"; 
+	font-size:20px; 
+	font-weight:normal; 
+	color:#03005C;
+}
+#contentlist .content  p {
+	font-family: "宋体";
+	font-size: 13px;
+	text-indent: 30px;
+	line-height: 200%;
+	margin-left: 0px;
+	padding: 0px;
+}
+
+#contentlist .content .pic img {
+	width: 40px; height: 40px;
+}
+
+
+#contentlist .content .list {
+	float: left;
+	padding-top: 4px;
+}
+
+#contentlist h2{
+	padding: 21px 0px 7px;
+}
+#contentlist .writing {
+	padding: 0px 23px 30px;
+}
+#list {
+	margin: 0px 7px;
+}
+
+#contentlist .line {
+	clear: both;
+	height: 1px;
+	background: url(./images/line3.gif) repeat-x;
+	overflow: hidden;
+	margin: 0px 4px;
+}
+#content .columnlist .body .author {
+	padding-bottom: 8px;
+}
+#content .columnlist .body .author .pic {
+	width: 120px; height: 120px;
+	border: 1px solid #999;
+	padding: 1px; margin: 5px auto;
+}
+#content .columnlist .body .author div {
+	height: 17px;
+	padding-left: 40px;
+}
+#content .columnlist .body .text {
+	padding: 10px;
+}

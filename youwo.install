@@ -1,0 +1,548 @@
+<?php
+
+/**
+ * @file
+ * Install, update and uninstall functions for the youwo module.
+ */
+
+/**
+ * Implements hook_install().
+ */
+function youwo_install() {
+  // Set the weight of the youwo.module to 1 so it is loaded after the taxonomy.module.
+  db_update('system')
+    ->fields(array('weight' => 1))
+    ->condition('name', 'youwo')
+    ->execute();
+  // Youwo topics are published by default, but do not have any other default
+  // options set (for example, they are not promoted to the front page).
+  variable_set('node_options_youwo', array('status'));
+}
+
+function _get_youwo_install_term($vid) {
+
+	$data = array(
+				array('name' => '计算机',
+					'description' => '有关计算机方面的信息',
+					'parent' => 0,
+					'vid' => $vid,
+					'container' => 1),
+				array('name' => '计算机软件',
+					'description' => '有关计算机软件方面的信息',
+					'parent' => 1,
+					'vid' => $vid,
+					'container' => 0),
+				array('name' => '计算机硬件',
+					'description' => '有关计算机上软件方面的信息',
+					'parent' => 1,
+					'vid' => $vid,
+					'container' => 0),
+
+				array('name' => '理财',
+					'description' => '和理财有关的信息',
+					'parent' => 0,
+					'vid' => $vid,
+					'container' => 1),
+				array('name' => '股票', 
+					'description' => '您可以索取有关股票方面的信息', 
+					'parent' =>1,
+					'vid' => $vid,
+					'container' => 0),
+				array('name' => '基金', 
+					'description' => '您可以索取有关基金方面的信息', 
+					'parent' =>1,
+					'vid' => $vid,
+					'container' => 0),
+				array('name' => '房产', 
+					'description' => '有关房屋的信息', 
+					'parent' =>0,
+					'vid' => $vid,
+					'container' => 1),
+				array('name' => '新房信息', 
+					'description' => '关于新房的信息', 
+					'parent' =>1,
+					'vid' => $vid,
+					'container' => 0),
+				array('name' => '二手房信息', 
+					'description' => '关于二手房的信息', 
+					'parent' =>1,
+					'vid' => $vid,
+					'container' => 0),
+				array('name' => '装修知识', 
+					'description' => '关于装修方面的信息', 
+					'parent' =>1,
+					'vid' => $vid,
+					'container' => 0),
+				array('name' => '医疗信息', 
+					'description' => '关于医疗方面的信息', 
+					'parent' =>0,
+					'vid' => $vid,
+					'container' => 1),
+				array('name' => '医院信息', 
+					'description' => '关于医院和医生方面的信息', 
+					'parent' =>1,
+					'vid' => $vid,
+					'container' => 0),
+				array('name' => '医药信息', 
+					'description' => '关于医药方面的信息', 
+					'parent' =>1,
+					'vid' => $vid,
+					'container' => 0),
+				array('name' => '其他',
+				    'description' => '所有不包含在以上类别中的请求',
+					'parent' =>0,
+					'vid' => $vid,
+					'container' => 0),
+		);
+
+	return $data;
+}
+
+function _youwo_install_data($vid) {
+
+	$data = _get_youwo_install_term($vid);
+
+	$parent_tid = 0;
+
+    foreach ($data as $record) {
+
+		$term = (object)$record;
+		if ($term->parent) {
+			$term->parent = $parent_tid;
+		}
+
+		taxonomy_term_save($term);
+		if ($term->container) {
+			$containers = variable_get('youwo_containers', array());
+			$containers[] = $term->tid;
+			variable_set('youwo_containers', $containers);
+			$parent_tid = $term->tid;
+		}
+	}
+}
+
+function _youwo_uninstall_data($vid=0) {
+	$data = _get_youwo_install_term($vid);
+    foreach ($data as $record) {
+		$terms = taxonomy_get_term_by_name ($record['name']);
+		foreach ($terms as $term) {
+			taxonomy_term_delete($term->tid);
+		}
+	}
+}
+
+function _youwo_add_menu_link() {
+
+    $menu_link = array(
+	   'link_title' => '发布请求',
+	   'link_path' => 'node/add/youwo',
+	   'module' => 'youwo',
+	);
+	menu_link_save($menu_link);
+	menu_cache_clear_all();
+}
+
+function _youwo_remove_menu_link() {
+    menu_link_delete(NULL, 'node/add/youwo');
+	menu_cache_clear_all();
+}
+
+function _youwo_installed_fields() {
+  return array(
+     'youwo_priority' => array(
+	    'field_name'  => 'youwo_priority',
+		'cardinality' => 1,
+		'type'        => 'list_text',
+		'settings' => array('allowed_values' => array('低', '中', '高')),
+	  ),
+	 'youwo_expected_fee' => array(
+	    'field_name' => 'youwo_expected_fee',
+		'settings' => array('max_length' => 10),
+		'cardinality' => 1,
+		'type'       => 'number_integer',
+	  ),
+	 'youwo_public' => array(
+	    'field_name' => 'youwo_public',
+		'type' =>  'list_text',
+		'settings' => array('allowed_values' => array('公开', '私有')),
+	  ),
+	 'youwo_image' => array(
+	    'field_name' => 'youwo_image',
+		'instance_settings' => array('max_filesize' => '20 MB'),
+		'type' => 'image',
+		'cardinality' => FIELD_CARDINALITY_UNLIMITED,
+	 ),
+	 'youwo_file' => array(
+	    'field_name' => 'youwo_file',
+		'type' => 'file',
+		'settings' => array('max_filesize' => '20M'),
+		'cardinality' => FIELD_CARDINALITY_UNLIMITED,
+	 ),
+   );
+}
+
+function _youwo_installed_instances() {
+  return array(
+    'youwo_priority' => array(
+	   'field_name' => 'youwo_priority',
+	   'label' => '紧要程度',
+       'entity_type' => 'node',
+	   'required' => TRUE,
+	   'bundle' => 'youwo',
+	   'default_value' => array(0 => array('value' => 1)),
+	   'widget' => array(
+	      'type' => 'options_select',
+	   ),
+	),
+	'youwo_expected_fee' => array(
+	   'field_name' => 'youwo_expected_fee',
+	   'label' => '期望支付的费用',
+       'entity_type' => 'node',
+	   'required' => TRUE,
+	   'bundle' => 'youwo',
+	   'default_value' => array(0 => array('value' => 10)),
+	   'settings' => array('min'=>'0', 'max'=>'10000', 'max_length'=>5,'suffix'=>'元', 'text_processing'=>0),
+	   'widget' => array(
+	      'type' => 'text_textfield',
+	   ),
+	),
+	'youwo_public' => array(
+	   'field_name' => 'youwo_public',
+	   'label' => '是否公开',
+	   'entity_type' => 'node',
+	   'required' => TRUE,
+	   'bundle' => 'youwo',
+	   'default_value' => array(0 => array('value' => 1)),
+	   'widget' => array(
+	      'type' => 'options_select',
+	   ),
+	),
+	'youwo_image' => array(
+	   'field_name' => 'youwo_image',
+	   'label' => '图片',
+       'entity_type' => 'node',
+	   'required' => FALSE,
+	   'bundle' => 'youwo',
+	   'widget' => array(
+	      'type' => 'image_image',
+		  'widget' => 2.10,
+	   ),
+	),
+	'youwo_file' => array(
+	   'field_name' => 'youwo_file',
+	   'label' => '其他附件',
+       'entity_type' => 'node',
+	   'required' => FALSE,
+	   'bundle' => 'youwo',
+	   'settings' => array('file_extensions' => 'pdf txt doc odt ppt'),
+	   'widget' => array(
+	      'type' => 'file_file',
+	   ),
+	),
+  );
+}
+
+function _youwo_remove_field_and_instance()
+{
+    foreach (array_keys(_youwo_installed_fields()) as $field) {
+        field_delete_field($field);
+    }
+
+    $instances = field_info_instances('node', 'youwo');
+    foreach ($instances as $instance_name => $instance) {
+        field_delete_instance($instance);
+	}
+}
+      
+function _youwo_create_field_and_instance()
+{
+  foreach (_youwo_installed_fields() as $field) {
+     if (!field_info_field($field['field_name'])) {
+			field_create_field($field);
+     }
+  }
+
+  foreach (_youwo_installed_instances() as $instance) {
+     if (!field_info_instance($instance['entity_type'], $instance['field_name'],
+	    $instance['bundle'])) {
+		field_create_instance($instance);
+	 }
+  }
+}
+
+/**
+ * Implements hook_enable().
+ */
+function youwo_enable() {
+  // If we enable youwo at the same time as taxonomy we need to call
+  // field_associate_fields() as otherwise the field won't be enabled until
+  // hook modules_enabled is called which takes place after hook_enable events.
+  field_associate_fields('taxonomy');
+  // Create the youwo vocabulary if it does not exist.
+  $vocabulary = taxonomy_vocabulary_load(variable_get('youwo_nav_vocabulary', 0));
+  if (!$vocabulary) {
+    $edit = array(
+      'name' => t('类别'),
+      'machine_name' => 'youwos',
+      'description' => t('Youwo navigation vocabulary'),
+      'hierarchy' => 1,
+      'module' => 'youwo',
+      'weight' => -10,
+    );
+    $vocabulary = (object) $edit;
+    taxonomy_vocabulary_save($vocabulary);
+    variable_set('youwo_nav_vocabulary', $vocabulary->vid);
+  }
+
+  // Create the 'taxonomy_youwos' field if it doesn't already exist.
+  if (!field_info_field('taxonomy_youwos')) {
+    $field = array(
+      'field_name' => 'taxonomy_youwos',
+      'type' => 'taxonomy_term_reference',
+      'settings' => array(
+        'allowed_values' => array(
+          array(
+            'vocabulary' => $vocabulary->machine_name,
+            'parent' => 0,
+          ),
+        ),
+      ),
+    );
+    field_create_field($field);
+
+	_youwo_install_data($vocabulary->vid);
+
+    // Create the instance on the bundle.
+    $instance = array(
+      'field_name' => 'taxonomy_youwos',
+      'entity_type' => 'node',
+      'label' => $vocabulary->name,
+      'bundle' => 'youwo',
+      'required' => TRUE,
+      'widget' => array(
+        'type' => 'options_select',
+		'default_value' => '其他',
+      ),
+      'display' => array(
+        'default' => array(
+          'type' => 'taxonomy_term_reference_link',
+         'weight' => 10,
+        ),
+        'teaser' => array(
+          'type' => 'taxonomy_term_reference_link',
+         'weight' => 10,
+        ),
+      ),
+    );
+    field_create_instance($instance);
+  }
+
+  // Ensure the youwo node type is available.
+  node_types_rebuild();
+  $types = node_type_get_types();
+  node_add_body_field($types['youwo']);
+
+  _youwo_create_field_and_instance();
+
+  _youwo_add_menu_link();
+}
+
+/**
+ * Implements hook_uninstall().
+ */
+function youwo_uninstall() {
+  // Load the dependent Taxonomy module, in case it has been disabled.
+  drupal_load('module', 'taxonomy');
+
+  variable_del('youwo_containers');
+  variable_del('youwo_hot_topic');
+  variable_del('youwo_per_page');
+  variable_del('youwo_order');
+  variable_del('youwo_block_num_active');
+  variable_del('youwo_block_num_new');
+  variable_del('node_options_youwo');
+
+  _youwo_remove_field_and_instance();
+  _youwo_uninstall_data();
+  _youwo_remove_menu_link();
+}
+
+/**
+ * Implements hook_schema().
+ */
+function youwo_schema() {
+  $schema['youwo_user'] = array(
+    'description' => 'User extended info for youwo.',
+	'fields' => array(
+	   'uid' => array(
+	      'type' => 'int',
+		  'unsigned' => TRUE,
+		  'not null' => TRUE,
+		  'default' => 0,
+		  'description' => 'The foreign key of the user.',
+		),
+	   'score' => array(
+	      'type' => 'int',
+		  'unsigned' => TRUE,
+		  'not null' => TRUE,
+		  'default' => 0,
+		  'description' => 'The user score.',
+		),
+	   'type' => array(
+	      'type' => 'int',
+		  'unsigned' => TRUE,
+		  'not null' => TRUE,
+		  'default' => 0,
+		  'description' => 'The user type. 0, primary, 1, intermedia, 2, advanced',
+	    ),
+	   ),
+    'primary key' => array('uid'),
+    'foreign keys' => array(
+      'youwo_node1' => array(
+        'table' => 'users',
+        'columns' => array(
+          'uid' => 'uid',
+        ),
+      ),
+    ),
+  );
+
+  $schema['youwo'] = array(
+    'description' => 'Stores the relationship of nodes to youwo terms.',
+    'fields' => array(
+      'nid' => array(
+        'type' => 'int',
+        'unsigned' => TRUE,
+        'not null' => TRUE,
+        'default' => 0,
+        'description' => 'The {node}.nid of the node.',
+      ),
+      'vid' => array(
+        'type' => 'int',
+        'unsigned' => TRUE,
+        'not null' => TRUE,
+        'default' => 0,
+        'description' => 'Primary Key: The {node}.vid of the node.',
+      ),
+      'tid' => array(
+        'type' => 'int',
+        'unsigned' => TRUE,
+        'not null' => TRUE,
+        'default' => 0,
+        'description' => 'The {taxonomy_term_data}.tid of the youwo term assigned to the node.',
+      ),
+    ),
+    'indexes' => array(
+      'youwo_topic' => array('nid', 'tid'),
+      'tid' => array('tid'),
+    ),
+    'primary key' => array('vid'),
+    'foreign keys' => array(
+      'youwo_node' => array(
+        'table' => 'node',
+        'columns' => array(
+          'nid' => 'nid',
+          'vid' => 'vid',
+        ),
+      ),
+    ),
+  );
+
+  $schema['youwo_request'] = array(
+    'description' => 'Extended info for youwo requests.',
+	'fields' => array(
+	   'nid' => array(
+	      'type' => 'int',
+		  'unsigned' => TRUE,
+		  'not null' => TRUE,
+		  'default' => 0,
+		  'description' => 'The foreign key of the node.',
+		),
+	   'request_status' => array(
+	      'type' => 'int',
+		  'unsigned' => TRUE,
+		  'not null' => TRUE,
+		  'default' => 0,
+		  'description' => 'The request state.',
+		),
+	),
+    'primary key' => array('nid'),
+    'foreign keys' => array(
+      'youwo_node_2' => array(
+        'table' => 'node',
+        'columns' => array(
+          'nid' => 'nid',
+        ),
+      ),
+    ),
+  );
+
+  $schema['youwo_index'] = array(
+    'description' => 'Maintains denormalized information about node/term relationships.',
+    'fields' => array(
+      'nid' => array(
+        'description' => 'The {node}.nid this record tracks.',
+        'type' => 'int',
+        'unsigned' => TRUE,
+        'not null' => TRUE,
+        'default' => 0,
+      ),
+      'title' => array(
+        'description' => 'The title of this node, always treated as non-markup plain text.',
+        'type' => 'varchar',
+        'length' => 255,
+        'not null' => TRUE,
+        'default' => '',
+      ),
+      'tid' => array(
+         'description' => 'The term ID.',
+         'type' => 'int',
+         'unsigned' => TRUE,
+         'not null' => TRUE,
+         'default' => 0,
+      ),
+      'sticky' => array(
+        'description' => 'Boolean indicating whether the node is sticky.',
+        'type' => 'int',
+        'not null' => FALSE,
+        'default' => 0,
+        'size' => 'tiny',
+      ),
+      'created' => array(
+        'description' => 'The Unix timestamp when the node was created.',
+        'type' => 'int',
+        'unsigned' => TRUE,
+        'not null' => TRUE,
+        'default'=> 0,
+      ),
+      'last_comment_timestamp' => array(
+        'type' => 'int',
+        'not null' => TRUE,
+        'default' => 0,
+        'description' => 'The Unix timestamp of the last comment that was posted within this node, from {comment}.timestamp.',
+      ),
+      'comment_count' => array(
+        'type' => 'int',
+        'unsigned' => TRUE,
+        'not null' => TRUE,
+        'default' => 0,
+        'description' => 'The total number of comments on this node.',
+      ),
+    ),
+    'indexes' => array(
+      'youwo_topics' => array('nid', 'tid', 'sticky', 'last_comment_timestamp'),
+    ), 'foreign keys' => array( 'tracked_node' => array(
+        'table' => 'node',
+        'columns' => array('nid' => 'nid'),
+      ),
+      'term' => array(
+        'table' => 'taxonomy_term_data',
+        'columns' => array(
+          'tid' => 'tid',
+        ),
+      ),
+    ),
+  );
+
+  return $schema;
+}

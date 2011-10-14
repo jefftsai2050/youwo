@@ -1,0 +1,568 @@
+@charset "utf-8";
+body,
+	h1, h2, h3,
+	p, ul, li, a,
+	input, button, textarea, select, form,
+	table, td {
+		color: #626262;
+		font: 12px "宋体", Arial;
+	}
+#login .login {
+	line-height: 18px;
+}
+#login .login input {
+	line-height: 16px;
+}
+#login .login button {
+	color: #626262;
+}
+#login .link a:hover {
+	color: #ff9c00;
+}
+#login .link a {
+	text-decoration: none;
+}
+#login .link a:hover {
+	text-decoration: underline;
+}
+#searchbtn {
+	font-weight: bold;
+}
+#searchbar .keywordbox input {
+	line-height: 14px;
+}
+#searchbar .hotkeyword a {
+	text-decoration: none;
+}
+#searchbar .hotkeyword a:hover {
+	text-decoration: underline;
+}
+#navigation li {
+	text-align: center;
+}
+#navigation li a {
+	color: #285b5c;
+	text-decoration: none;
+}
+#navigation li a:hover {
+	text-decoration: underline;
+}
+#navigation .current a {
+	color: #fff;
+}
+#new .info li {
+	color: #fff;
+	line-height: 21px;
+}
+#new .info .title {
+	text-align: right;
+}
+#new .info .content td {
+	color: #fff;
+}
+#new .info .content table a {
+	color: #fff;
+	text-decoration: none;
+	line-height: 21px;
+}
+#new .info .content table a:hover {
+	text-decoration: underline;
+}
+#new .new li {
+	line-height: 17px;
+}
+#new .new .text {
+	color: #0167a2;
+}
+#new .new .link a {
+	color: #8f8f8f;
+	text-decoration: none;
+}
+#new .new .link a:hover {
+	text-decoration: underline;
+}
+#new .new .line {
+	font: 0px/0px sans-serif;
+}
+#new .new .list a {
+	text-decoration: none;
+}
+#new .new .list a:hover {
+	text-decoration: underline;
+}
+#speciallyinvite .title {
+	line-height: 23px;
+	color: #333;
+	text-align: center;
+	font-weight: bold;
+}
+#speciallyinvite .authortitle {
+	color: #0167a2;
+	text-align: center;
+	font-weight: bold;
+}
+#speciallyinvite .authorname {
+	text-align: center;
+	font-weight: bold;
+	line-height: 15px;
+}
+#speciallyinvite .intor {
+	text-align: center;
+	line-height: 16px;
+}
+#speciallyinvite .entry {
+	text-align: center;
+}
+#speciallyinvite .entry a {
+	color: #ff9c00;
+	text-align: center;
+	font-weight: bold;
+	text-decoration: none;
+}
+#speciallyinvite .entry a:hover {
+	text-decoration: underline;
+}
+#throughway .text {
+	color: #333;
+	font-weight: bold;
+}
+#throughway .body li {
+	line-height: 22px;
+}
+#throughway .body li a {
+	line-height: 22px;
+	text-decoration: none;
+}
+#throughway .body li a:hover {
+	line-height: 22px;
+	text-decoration: underline;
+}
+#throughway .body .order {
+	font-weight: bold;
+}
+#throughway .body .entry a {
+	color: #626262;
+	font-weight: bold;
+}
+#throughway .body .entry a:hover {
+	color: #999;
+	text-decoration: underline;
+}
+#throughway .line {
+	font: 0px/0px sans-serif;
+}
+.columnlist .title .text,
+#investigate .title .text {
+	color: #333;
+	font-weight: bold;
+}
+.columnlist .body li {
+	line-height: 20px;
+}
+.columnlist .body p {
+	color: #0167a2;
+	line-height: 18px;
+}
+.columnlist .body li a {
+	text-decoration: none;
+}
+.columnlist .body li a:hover {
+	text-decoration: underline;
+}
+.columnlist .body .photo h1 {
+	font-weight: bold;
+}
+#investigate .question {
+	line-height: 18px;
+}
+#investigate .answer {
+	line-height: 16px;
+}
+.columnlist .title .more a {
+	color: #9e9e9e;
+	text-decoration: none;
+}
+.columnlist .title .more a:hover {
+	text-decoration: underline;
+}
+#contentlist .column .title .text {
+	color: #0167a2;
+	font-weight: bold;
+}
+#contentlist .column .title .link a {
+	color: #9e9e9e;
+	text-decoration: none;
+}
+#contentlist .column .title .link a:hover {
+	text-decoration: underline;
+}
+#contentlist .column .content .list li {
+	line-height: 19px;
+}
+#contentlist .column .content .list a {
+	color: #626262;
+	text-decoration: none;
+}
+#contentlist .column .content .list a:hover {
+	text-decoration: underline;
+}
+#footer {
+	color: #626262;
+}
+#footer a {
+	color: #626262;
+	text-decoration: none;
+}
+#footer a:hover {
+	text-decoration: underline;
+}
+#footer .other {
+	text-align: center;
+}
+#preview .intro .title {
+	color: #0167a2;
+	font-weight: bold;
+}
+#preview .intro .text {
+	color: #393838;
+	line-height: 19px;
+}
+#preview .intro .link div {
+	line-height: 17px;
+}
+#preview .intro .link div a {
+	color: #8f8f8f;
+	text-decoration: none;
+	line-height: 18px;
+}
+#preview .intro .link div a:hover {
+	text-decoration: underline;
+}
+#latestArticle .info .title {
+	color: #fff;
+	line-height: 20px;
+}
+#latestArticle .title li {
+	color: #0167a2;
+}
+#latestArticle .list li a {
+	color: #626262;
+	text-decoration: none;
+	line-height: 18px;
+}
+#latestArticle .list li a:hover {
+	color: #626262;
+	text-decoration: underline;
+}
+#latestArticle .info .content td {
+	color: #fff;
+}
+#latestArticle .info .content table a {
+	color: #fff;
+	text-decoration: none;
+	line-height: 21px;
+}
+#latestArticle .info .content table a:hover {
+	text-decoration: underline;
+}
+#articlelist table th {
+	color: #fff;
+	font-weight: normal;
+	line-height: 19px;
+	text-align: left;
+}
+#articlelist table th.author {
+	text-align: center;
+}
+#articlelist table th.timestamp {
+	text-align: right;
+}
+#articlelist table td a {
+	text-decoration: none;
+}
+#articlelist table td a:link {
+	color: #626262;
+}
+#articlelist table td a:visited {
+	/*color: #b3b3b3;*/
+}
+#articlelist table td a:focus {
+	color: #626262;
+}
+#articlelist table td a:hover {
+	color: #626262;
+	text-decoration: underline;
+}
+#articlelist table td a:active {}
+#articlelist table td.operation {
+	text-align: center;
+}
+#articlelist table td.timestamp {
+	text-align: right;
+}
+#pagination {
+	color: #838383;
+	text-align: right;
+}
+#pagination a {
+	color: #838383;
+	text-decoration: none;
+}
+#pagination a:hover {
+	color: #838383;
+	text-decoration: underline;
+}
+#address {
+	color: #0167a2;
+}
+#address a {
+	color: #0167a2;
+	text-decoration: none;
+}
+#address a:hover {
+	text-decoration: underline;
+}
+#particular h1 {
+	color: #393838;
+	font-size: 14px;
+	font-weight: bold;
+	text-align: center;
+}
+#particular .reading .title {
+	color: #393838;
+	font-weight: bold;
+	text-align: right;
+	line-height: 18px;
+}
+#particular .reading .text {
+	line-height: 18px;
+}
+#particular .reading .text a {
+	color: #ff9600;
+	font-weight: bold;
+	text-decoration: none;
+}
+#particular .reading .text a:hover {
+	color: #ff9600;
+	text-decoration: underline;
+}
+#particular .operation .title {
+	color: #393838;
+	font-weight: bold;
+	text-align: right;
+}
+#particular .operation .grade .pointinfo {
+	text-align: right;
+	line-height: 20px;
+}
+#particular .operation .grade .pointinfo a {
+	text-decoration: none;
+}
+#particular .operation .grade .pointinfo a:hover {
+	text-decoration: underline;
+}
+#particular .other h2 {
+	color: #393838;
+	font-weight: bold;
+}
+#particular .other a {
+	line-height: 18px;
+	text-decoration: none;
+}
+#particular .other a:hover {
+	text-decoration: underline;
+}
+#particular .operation .point li {
+	line-height: 21px;
+}
+#particular .download .point span {
+	color: #393838;
+	font-weight: bold;
+}
+#particular .download .link a {
+	text-decoration: none;
+}
+#particular .download .link a:hover {
+	text-decoration: underline;
+}
+#userlogon .backboard h1 {
+	color: #0167a2;
+	font-weight: bold;
+	text-align: center;
+}
+#userlogon .backboard .name {
+	color: #393838;
+	font-weight: bold;
+	text-align: right;
+	line-height: 23px;
+	*line-height: 23px;
+}
+#userlogon .backboard .link a {
+	color: #393838;
+	text-decoration: none;
+}
+#userlogon .backboard .link a:hover {
+	text-decoration: underline;
+}
+#userlogon .backboard .button button {
+	color: #0167a2;
+	font-weight: bold;
+}
+#main .leavewords .button {
+	text-align: right;
+}
+#main .leavewords .button button {
+	color: #393838;
+}
+#main .prompt h1 {
+	color: #333;
+	font-weight: bold;
+}
+#contentlist .newsletter h1 {
+	color: #333;
+	font-weight: bold;
+}
+#contentlist .newsletter .text {
+	line-height: 18px;
+}
+#contentlist .newsletter a {
+	color: #ff9c00;
+	font-weight: bold;
+	text-decoration: none;
+}
+#contentlist .newsletter a:hover {
+	text-decoration: underline;
+}
+#space .title {
+	color: #0167a2;
+}
+#space .result h1 a {
+	color: #626262;
+	font-size: 14px;
+	font-weight: bold;
+	text-decoration: none;
+}
+#space .result h1 a:hover {
+	text-decoration: underline;
+}
+#space .result .text {
+	line-height: 16px;
+}
+#space .result .about li {
+	color: #939393;
+}
+#space .pagination a {
+	text-decoration: none;
+}
+#space .pagination a:hover {
+	color: #FF6600;
+	text-decoration: underline;
+}
+#contentlist .pagination {
+	color: #838383;
+	text-align: right;
+}
+#contentlist .pagination a {
+	color: #838383;
+	text-decoration: none;
+}
+#contentlist .pagination a:hover {
+	color: #838383;
+	text-decoration: underline;
+}
+#contentlist h1 {
+	color: #626262;
+	font-size: 12px;
+	font-weight: bold;
+}
+#contentlist h1 {
+	color: #626262;
+	font-size: 12px;
+	font-weight: bold;
+}
+#main .register .title {
+	color: #393838;
+	font-weight: bold;
+	text-align: right;
+}
+#main .register .info {
+	line-height: 18px;
+}
+#main .register .state {
+	color: #f00;
+}
+#space .intro h1 {
+	color: #363636;
+	font-weight: bold;
+}
+#space .intro .list .center {
+	text-align: center;
+}
+#space .intro .list .left {
+	text-align: left;
+	padding-left: 10px;
+}
+#sidebar .button a {
+	line-height: 33px;
+}
+#sidebar .button a {
+	color: #0167a2;
+	font-weight: bold;
+	text-decoration: none;
+}
+#sidebar .button a:hover {
+	color: #0085d2;
+	font-weight: bold;
+	text-decoration: none;
+}
+#contentlist .userinfo .title {
+	color: #393838;
+	font-weight: bold;
+	text-align: right;
+}
+#contentlist .userinfo .info {
+	line-height: 18px;
+}
+#contentlist .userinfo .state {
+	color: #f00;
+}
+#contentlist .integral h1 {
+	font-size: 12px;
+	font-weight: bold;
+	text-align: left;
+}
+#contentlist .card .list h1 {
+	text-align: left;
+}
+#contentlist .card .pic .name {
+	text-align: center;
+}
+#contentlist .card .list li a {
+	color: #393838;
+	text-decoration: none;
+}
+#contentlist .card .list li a:hover {
+	text-decoration: underline;
+}
+#content .columnlist .body .author .blog {
+	color: #333;
+	font-weight: bold;
+	text-decoration: none;
+}
+#content .columnlist .body .author .blog:hover {
+	text-decoration: underline;
+}
+#content .columnlist .body .author .guest {
+	color: #fb9e00;
+	font-weight: bold;
+	text-decoration: none;
+}
+#content .columnlist .body .author .guest:hover {
+	text-decoration: underline;
+}
+#content .columnlist .body .text a {
+	text-decoration: none;
+}
+#content .columnlist .body .text a:hover {
+	text-decoration: underline;
+}

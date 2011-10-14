@@ -1,0 +1,1444 @@
+<?php
+
+/**
+ * @file
+ * Provides discussion youwos.
+ */
+
+/**
+ * Implements hook_help().
+ */
+include_once 'youwo-common.inc';
+
+function youwo_help($path, $arg) {
+  switch ($path) {
+    case 'admin/help#youwo':
+      $output = '';
+      $output .= '<h3>' . t('About') . '</h3>';
+      $output .= '<p>' . t('The Youwo module lets you create threaded discussion youwos with functionality similar to other message board systems. Youwos are useful because they allow community members to discuss topics with one another while ensuring those conversations are archived for later reference. In a youwo, users post topics and threads in nested hierarchies, allowing discussions to be categorized and grouped. The youwo hierarchy consists of:') . '</p>';
+      $output .= '<ul>';
+      $output .= '<li>' . t('Optional containers (for example, <em>Support</em>), which can hold:') . '</li>';
+      $output .= '<ul><li>' . t('Youwos (for example, <em>Installing Drupal</em>), which can hold:') . '</li>';
+      $output .= '<ul><li>' . t('Youwo topics submitted by users (for example, <em>How to start a Drupal 6 Multisite</em>), which start discussions and are starting points for:') . '</li>';
+      $output .= '<ul><li>' . t('Threaded comments submitted by users (for example, <em>You have these options...</em>).') . '</li>';
+      $output .= '</ul>';
+      $output .= '</ul>';
+      $output .= '</ul>';
+      $output .= '</ul>';
+      $output .= '<p>' . t('For more information, see the online handbook entry for <a href="@youwo">Youwo module</a>.', array('@youwo' => 'http://drupal.org/handbook/modules/youwo')) . '</p>';
+      $output .= '<h3>' . t('Uses') . '</h3>';
+      $output .= '<dl>';
+      $output .= '<dt>' . t('Setting up youwo structure') . '</dt>';
+      $output .= '<dd>' . t('Visit the <a href="@youwos">Youwos page</a> to set up containers and youwos to hold your discussion topics.', array('@youwos' => url('admin/structure/youwo'))) . '</dd>';
+      $output .= '<dt>' . t('Starting a discussion') . '</dt>';
+      $output .= '<dd>' . t('The <a href="@create-topic">Youwo topic</a> link on the <a href="@content-add">Add new content</a> page creates the first post of a new threaded discussion, or thread.', array('@create-topic' => url('node/add/youwo'), '@content-add' => url('node/add'))) . '</dd>';
+      $output .= '<dt>' . t('Navigation') . '</dt>';
+      $output .= '<dd>' . t('Enabling the Youwo module provides a default <em>Youwos</em> menu item in the navigation menu that links to the <a href="@youwos">Youwos page</a>.', array('@youwos' => url('youwo'))) . '</dd>';
+      $output .= '<dt>' . t('Moving youwo topics') . '</dt>';
+      $output .= '<dd>' . t('A youwo topic (and all of its comments) may be moved between youwos by selecting a different youwo while editing a youwo topic. When moving a youwo topic between youwos, the <em>Leave shadow copy</em> option creates a link in the original youwo pointing to the new location.') . '</dd>';
+      $output .= '<dt>' . t('Locking and disabling comments') . '</dt>';
+      $output .= '<dd>' . t('Selecting <em>Closed</em> under <em>Comment settings</em> while editing a youwo topic will lock (prevent new comments on) the thread. Selecting <em>Hidden</em> under <em>Comment settings</em> while editing a youwo topic will hide all existing comments on the thread, and prevent new ones.') . '</dd>';
+      $output .= '</dl>';
+      return $output;
+    case 'admin/structure/youwo':
+
+      $output = '<p>' . t('Youwos contain youwo topics. Use containers to group related youwos.') . '</p>'; $output .= theme('more_help_link', array('url' => 'admin/help/youwo'));
+      return $output;
+    case 'admin/structure/youwo/add/container':
+      return '<p>' . t('Use containers to group related youwos.') . '</p>';
+    case 'admin/structure/youwo/add/youwo':
+      return '<p>' . t('A youwo holds related youwo topics.') . '</p>';
+    case 'admin/structure/youwo/settings':
+      return '<p>' . t('Adjust the display of your youwo topics. Organize the youwos on the <a href="@youwo-structure">youwo structure page</a>.', array('@youwo-structure' => url('admin/structure/youwo'))) . '</p>';
+  }
+}
+
+/**
+ * Implements hook_theme().
+ */
+function youwo_theme() {
+  return array(
+    'youwos' => array(
+      'template' => 'youwos',
+      'variables' => array('youwos' => NULL, 'topics' => NULL, 'parents' => NULL, 'tid' => NULL, 'sortby' => NULL, 'youwo_per_page' => NULL),
+    ),
+	'what_it_is_page' => array(
+	  'template' => 'what-it-is-page',
+	  'variables' => array(),
+	),
+    'youwo_list' => array(
+      'template' => 'youwo-list',
+      'variables' => array('youwos' => NULL, 'parents' => NULL, 'tid' => NULL),
+    ),
+    'youwo_topic_list' => array(
+      'template' => 'youwo-topic-list',
+      'variables' => array('tid' => NULL, 'topics' => NULL, 'sortby' => NULL, 'youwo_per_page' => NULL),
+    ),
+    'youwo_icon' => array(
+      'template' => 'youwo-icon',
+      'variables' => array('new_posts' => NULL, 'num_posts' => 0, 'comment_mode' => 0, 'sticky' => 0, 'first_new' => FALSE),
+    ),
+    'youwo_submitted' => array(
+      'template' => 'youwo-submitted',
+      'variables' => array('topic' => NULL),
+    ),
+    'youwo_form' => array(
+      'render element' => 'form',
+      'file' => 'youwo.admin.inc',
+    ),
+	'my_requests' => array(
+	  'template' => 'my-requests',
+      'variables' => array('tid' => NULL, 'topics' => NULL, 'sortby' => NULL, 'youwo_per_page' => NULL),
+	),
+	'my_score' => array(
+	  'template' => 'my-score',
+      'variables' => array('youwo_user' => NULL),
+	),
+	'request_select_class' => array(
+	  'template' => 'request-select-class',
+	  'variables' => array('categories' => NULL, 'parents' => NULL, 'sortby' =>NULL, 'youwo_per_page' => NULL),
+	),
+  );
+}
+
+/**
+ * Implements hook_menu().
+ */
+function youwo_menu() {
+  $items['youwo'] = array(
+    'title' => '我的帮我',
+    'page callback' => 'youwo_page',
+    'access arguments' => array('access request'),
+	'expanded' => TRUE,
+    'file' => 'youwo.pages.inc',
+  );
+  $items['youwo/what_it_is'] = array(
+    'title' => '什么是帮我',
+	'page callback' => 'what_it_is_page',
+	'access arguments' => array('access content'),
+    'type' => MENU_CALLBACK,
+	'file' => 'youwo.pages.inc',
+  );
+  $items['youwo/start_page'] = array(
+     'title' => '开始',
+	 'page callback' => 'youwo_start',
+	 'access argument' => array('access content'),
+	 'type' => MENU_CALLBACK,
+	 'file' => 'youwo.pages.inc',
+  );
+  $items['youwo/my_requests'] = array(
+    'title' => '我的请求',
+	'page callback' => 'my_requests_page',
+	'page arguments' => array(1),
+	'access arguments' => array('access request'),
+	'file' => 'my-requests.pages.inc',
+  );
+  $items['youwo/create_request'] = array(
+     'title' => '发布请求',
+	 'page callback' => 'youwo_create_request',
+	 'access arguments' => array('access request'),
+	 'type' => MENU_CALLBACK,
+	 'file' => 'youwo-create-request.inc',
+  );
+  $items['youwo/my_score'] = array(
+    'title' => '我的积分',
+	'page callback' => 'my_score_page',
+	'page arguments' => NULL,
+	'access arguments' => array('access request'),
+	'file' => 'user.pages.inc',
+  );
+  $items['youwo/%youwo_youwo'] = array(
+    'title' => '服务请求',
+    'page callback' => 'youwo_page',
+    'page arguments' => array(1),
+    'access arguments' => array('access request'),
+    'file' => 'youwo.pages.inc',
+  );
+  $items['admin/structure/youwo'] = array(
+    'title' => '帮我管理',
+    'description' => 'Control youwo hierarchy settings.',
+    'page callback' => 'drupal_get_form',
+    'page arguments' => array('youwo_overview'),
+    'access arguments' => array('administer youwos'),
+    'file' => 'youwo.admin.inc',
+  );
+  $items['admin/structure/youwo/list'] = array(
+    'title' => 'List',
+    'type' => MENU_DEFAULT_LOCAL_TASK,
+    'weight' => -10,
+  );
+  $items['admin/structure/youwo/add/container'] = array(
+    'title' => 'Add container',
+    'page callback' => 'youwo_form_main',
+    'page arguments' => array('container'),
+    'access arguments' => array('administer youwos'),
+    'type' => MENU_LOCAL_ACTION,
+    'parent' => 'admin/structure/youwo',
+    'file' => 'youwo.admin.inc',
+  );
+  $items['admin/structure/youwo/add/youwo'] = array(
+    'title' => 'Add youwo',
+    'page callback' => 'youwo_form_main',
+    'page arguments' => array('youwo'),
+    'access arguments' => array('administer youwos'),
+    'type' => MENU_LOCAL_ACTION,
+    'parent' => 'admin/structure/youwo',
+    'file' => 'youwo.admin.inc',
+  );
+  $items['admin/structure/youwo/settings'] = array(
+    'title' => 'Settings',
+    'page callback' => 'drupal_get_form',
+    'page arguments' => array('youwo_admin_settings'),
+    'access arguments' => array('administer youwos'),
+    'weight' => 5,
+    'type' => MENU_LOCAL_TASK,
+    'parent' => 'admin/structure/youwo',
+    'file' => 'youwo.admin.inc',
+  );
+  $items['admin/structure/youwo/edit/container/%taxonomy_term'] = array(
+    'title' => 'Edit container',
+    'page callback' => 'youwo_form_main',
+    'page arguments' => array('container', 5),
+    'access arguments' => array('administer youwos'),
+    'file' => 'youwo.admin.inc',
+  );
+  $items['admin/structure/youwo/edit/youwo/%taxonomy_term'] = array(
+    'title' => 'Edit youwo',
+    'page callback' => 'youwo_form_main',
+    'page arguments' => array('youwo', 5),
+    'access arguments' => array('administer youwos'),
+    'file' => 'youwo.admin.inc',
+  );
+
+  return $items;
+}
+
+/**
+ * Implements hook_menu_local_tasks_alter().
+ */
+function youwo_menu_local_tasks_alter(&$data, $router_item, $root_path) {
+  global $user;
+
+  // Add action link to 'node/add/youwo' on 'youwo' sub-pages.
+  if ($root_path == 'youwo' || $root_path == 'youwo/%') {
+    $tid = (isset($router_item['page_arguments'][0]) ? $router_item['page_arguments'][0]->tid : 0);
+    $youwo_term = youwo_youwo_load($tid);
+    if ($youwo_term) {
+      $links = array();
+      // Loop through all bundles for youwo taxonomy vocabulary field.
+      $field = field_info_field('taxonomy_youwos');
+      foreach ($field['bundles']['node'] as $type) {
+        if (node_access('create', $type)) {
+          $links[$type] = array(
+            '#theme' => 'menu_local_action',
+            '#link' => array(
+              'title' => t('Add new @node_type', array('@node_type' => node_type_get_name($type))),
+              'href' => 'node/add/' . str_replace('_', '-', $type) . '/' . $youwo_term->tid,
+            ),
+          );
+        }
+      }
+      if (empty($links)) {
+        // Authenticated user does not have access to create new topics.
+        if ($user->uid) {
+          $links['disallowed'] = array(
+            '#theme' => 'menu_local_action',
+            '#link' => array(
+              'title' => t('You are not allowed to post new content in the youwo.'),
+            ),
+          );
+        }
+        // Anonymous user does not have access to create new topics.
+        else {
+          $links['login'] = array(
+            '#theme' => 'menu_local_action',
+            '#link' => array(
+              'title' => t('<a href="@login">Log in</a> to post new content in the youwo.', array(
+                '@login' => url('user/login', array('query' => drupal_get_destination())),
+              )),
+              'localized_options' => array('html' => TRUE),
+            ),
+          );
+        }
+      }
+      $data['actions']['output'] = array_merge($data['actions']['output'], $links);
+    }
+  }
+}
+
+/**
+ * Implements hook_entity_info_alter().
+ */
+function youwo_entity_info_alter(&$info) {
+  // Take over URI constuction for taxonomy terms that are youwos.
+  if ($vid = variable_get('youwo_nav_vocabulary', 0)) {
+    // Within hook_entity_info(), we can't invoke entity_load() as that would
+    // cause infinite recursion, so we call taxonomy_vocabulary_get_names()
+    // instead of taxonomy_vocabulary_load(). All we need is the machine name
+    // of $vid, so retrieving and iterating all the vocabulary names is somewhat
+    // inefficient, but entity info is cached across page requests, and an
+    // iteration of all vocabularies once per cache clearing isn't a big deal,
+    // and is done as part of taxonomy_entity_info() anyway.
+    foreach (taxonomy_vocabulary_get_names() as $machine_name => $vocabulary) {
+      if ($vid == $vocabulary->vid) {
+        $info['taxonomy_term']['bundles'][$machine_name]['uri callback'] = 'youwo_uri';
+      }
+    }
+  }
+}
+
+/**
+ * Entity URI callback.
+ */
+function youwo_uri($youwo) {
+  return array(
+    'path' => 'youwo/' . $youwo->tid,
+  );
+}
+
+/**
+ * Check whether a content type can be used in a youwo.
+ *
+ * @param $node
+ *   A node object.
+ *
+ * @return
+ *   Boolean indicating if the node can be assigned to a youwo.
+ */
+function _youwo_node_check_node_type($node) {
+  // Fetch information about the youwo field.
+  $field = field_info_instance('node', 'taxonomy_youwos', $node->type);
+
+  return is_array($field);
+}
+
+/**
+ * Implements hook_node_view().
+ */
+function youwo_node_view($node, $view_mode) {
+  $vid = variable_get('youwo_nav_vocabulary', 0);
+  $vocabulary = taxonomy_vocabulary_load($vid);
+  if (_youwo_node_check_node_type($node)) {
+    if ($view_mode == 'full' && node_is_page($node)) {
+      // Breadcrumb navigation
+      $breadcrumb[] = l(t('Home'), NULL);
+      $breadcrumb[] = l($vocabulary->name, 'youwo');
+      if ($parents = taxonomy_get_parents_all($node->youwo_tid)) {
+        $parents = array_reverse($parents);
+        foreach ($parents as $parent) {
+          $breadcrumb[] = l($parent->name, 'youwo/' . $parent->tid);
+        }
+      }
+      drupal_set_breadcrumb($breadcrumb);
+
+    }
+  }
+}
+
+/**
+ * Implements hook_node_validate().
+ *
+ * Check in particular that only a "leaf" term in the associated taxonomy.
+ */
+function youwo_node_validate($node, $form) {
+  if (_youwo_node_check_node_type($node)) {
+    $langcode = $form['taxonomy_youwos']['#language'];
+    // vocabulary is selected, not a "container" term.
+    if (!empty($node->taxonomy_youwos[$langcode])) {
+      // Extract the node's proper topic ID.
+      $containers = variable_get('youwo_containers', array());
+      foreach ($node->taxonomy_youwos[$langcode] as $delta => $item) {
+        // If no term was selected (e.g. when no terms exist yet), remove the
+        // item.
+        if (empty($item['tid'])) {
+          unset($node->taxonomy_youwos[$langcode][$delta]);
+          continue;
+        }
+        $term = taxonomy_term_load($item['tid']);
+        if (!$term) {
+          form_set_error('taxonomy_youwos', t('Select a youwo.'));
+          continue;
+        }
+        $used = db_query_range('SELECT 1 FROM {taxonomy_term_data} WHERE tid = :tid AND vid = :vid',0 , 1, array(
+          ':tid' => $term->tid,
+          ':vid' => $term->vid,
+        ))->fetchField();
+        if ($used && in_array($term->tid, $containers)) {
+          form_set_error('taxonomy_youwos', t('The item %youwo is a youwo container, not a youwo. Select one of the youwos below instead.', array('%youwo' => $term->name)));
+        }
+      }
+    }
+  }
+}
+
+/**
+ * Implements hook_node_presave().
+ *
+ * Assign youwo taxonomy when adding a topic from within a youwo.
+ */
+function youwo_node_presave($node) {
+  if (_youwo_node_check_node_type($node)) {
+    // Make sure all fields are set properly:
+    $node->icon = !empty($node->icon) ? $node->icon : '';
+    reset($node->taxonomy_youwos);
+    $langcode = key($node->taxonomy_youwos);
+    if (!empty($node->taxonomy_youwos[$langcode])) {
+      $node->youwo_tid = $node->taxonomy_youwos[$langcode][0]['tid'];
+      $old_tid = db_query_range("SELECT f.tid FROM {youwo} f INNER JOIN {node} n ON f.vid = n.vid WHERE n.nid = :nid ORDER BY f.vid DESC", 0, 1, array(':nid' => $node->nid))->fetchField();
+      if ($old_tid && isset($node->youwo_tid) && ($node->youwo_tid != $old_tid) && !empty($node->shadow)) {
+        // A shadow copy needs to be created. Retain new term and add old term.
+        $node->taxonomy_youwos[$langcode][] = array('tid' => $old_tid);
+      }
+    }
+  }
+}
+
+/**
+ * Implements hook_node_update().
+ */
+function youwo_node_update($node) {
+  if (_youwo_node_check_node_type($node)) {
+    if (empty($node->revision) && db_query('SELECT tid FROM {youwo} WHERE nid=:nid', array(':nid' => $node->nid))->fetchField()) {
+      if (!empty($node->youwo_tid)) {
+        db_update('youwo')
+          ->fields(array('tid' => $node->youwo_tid))
+          ->condition('vid', $node->vid)
+          ->execute();
+      }
+      // The node is removed from the youwo.
+      else {
+        db_delete('youwo')
+          ->condition('nid', $node->nid)
+          ->execute();
+      }
+    }
+    else {
+      if (!empty($node->youwo_tid)) {
+        db_insert('youwo')
+          ->fields(array(
+            'tid' => $node->youwo_tid,
+            'vid' => $node->vid,
+            'nid' => $node->nid,
+          ))
+          ->execute();
+
+      }
+    }
+    // If the node has a shadow youwo topic, update the record for this
+    // revision.
+	/*
+    if ($node->shadow) {
+      db_delete('youwo')
+        ->condition('nid', $node->nid)
+        ->condition('vid', $node->vid)
+        ->execute();
+      db_insert('youwo')
+        ->fields(array(
+          'nid' => $node->nid,
+          'vid' => $node->vid,
+          'tid' => $node->youwo_tid,
+        ))
+        ->execute();
+     }
+	 */
+  }
+}
+
+/**
+ * Implements hook_node_insert().
+ */
+function youwo_node_insert($node) {
+  if (_youwo_node_check_node_type($node)) {
+    if (!empty($node->youwo_tid)) {
+      $nid = db_insert('youwo')
+        ->fields(array(
+          'tid' => $node->youwo_tid,
+          'vid' => $node->vid,
+          'nid' => $node->nid,
+        ))
+        ->execute();
+
+        db_insert('youwo_request')
+	      ->fields(array(
+		    'nid' => $node->nid,
+            'request_status' => 1,
+		  ))
+          ->execute();
+
+    }
+  }
+}
+
+function youwo_comment_insert($comment) {
+	global $user;
+	$node = node_load($comment->nid);
+	if ($node->uid != $user->uid) {
+		db_update('youwo_request')
+           ->fields( array(
+             'request_status' => 2,
+		))
+      ->condition('nid', $comment->nid)
+	  ->condition('request_status', 1)
+      ->execute();
+    }
+}
+
+/**
+ * Implements hook_node_delete().
+ */
+function youwo_node_delete($node) {
+  if (_youwo_node_check_node_type($node)) {
+    db_delete('youwo')
+      ->condition('nid', $node->nid)
+      ->execute();
+    db_delete('youwo_index')
+      ->condition('nid', $node->nid)
+      ->execute();
+  }
+}
+
+/**
+ * Implements hook_node_load().
+ */
+function youwo_node_load($nodes) {
+  $node_vids = array();
+  foreach ($nodes as $node) {
+    if (_youwo_node_check_node_type($node)) {
+      $node_vids[] = $node->vid;
+    }
+  }
+  if (!empty($node_vids)) {
+    $query = db_select('youwo', 'f');
+    $query
+      ->fields('f', array('nid', 'tid'))
+      ->condition('f.vid', $node_vids);
+    $result = $query->execute();
+    foreach ($result as $record) {
+      $nodes[$record->nid]->youwo_tid = $record->tid;
+    }
+  }
+}
+
+/**
+ * Implements hook_node_info().
+ */
+function youwo_node_info() {
+  return array(
+    'youwo' => array(
+      'name' => '服务请求',
+      'base' => 'youwo',
+      'description' => t('用户通过<em>服务请求</em>得到我们提供的服务.'),
+      'title_label' => t('Subject'),
+    )
+  );
+}
+
+/**
+ * Implements hook_permission().
+ */
+function youwo_permission() {
+  $perms = array(
+    'administer youwos' => array(
+      'title' => t('管理有我'),
+    ),
+	'access request' => array(
+	  'title' => '访问请求',
+	  'description' => '该权限允许用户能够发布请求',
+	),
+	'view private request' => array(
+	  'title' => t('查看私有请求'),
+	  'description' => '该权限允许用户能够查看其他用户的私有请求',
+	),
+  );
+
+  return $perms;
+}
+
+/**
+ * Implements hook_taxonomy_term_delete().
+ */
+function youwo_taxonomy_term_delete($tid) {
+  // For containers, remove the tid from the youwo_containers variable.
+  $containers = variable_get('youwo_containers', array());
+  $key = array_search($tid, $containers);
+  if ($key !== FALSE) {
+    unset($containers[$key]);
+  }
+  variable_set('youwo_containers', $containers);
+}
+
+/**
+ * Implements hook_comment_publish().
+ *
+ * This actually handles the insert and update of published nodes since
+ * comment_save() calls hook_comment_publish() for all published comments.
+ */
+function youwo_comment_publish($comment) {
+  _youwo_update_youwo_index($comment->nid);
+}
+
+/**
+ * Implements hook_comment_update().
+ *
+ * Comment module doesn't call hook_comment_unpublish() when saving individual
+ * comments so we need to check for those here.
+ */
+function youwo_comment_update($comment) {
+  // comment_save() calls hook_comment_publish() for all published comments
+  // so we to handle all other values here.
+  if (!$comment->status) {
+    _youwo_update_youwo_index($comment->nid);
+  }
+}
+
+/**
+ * Implements hook_comment_unpublish().
+ */
+function youwo_comment_unpublish($comment) {
+  _youwo_update_youwo_index($comment->nid);
+}
+
+/**
+ * Implements hook_comment_delete().
+ */
+function youwo_comment_delete($comment) {
+  _youwo_update_youwo_index($comment->nid);
+}
+
+/**
+ * Implements hook_field_storage_pre_insert().
+ */
+function youwo_field_storage_pre_insert($entity_type, $entity, &$skip_fields) {
+  if ($entity_type == 'node' && $entity->status && _youwo_node_check_node_type($entity)) {
+    $query = db_insert('youwo_index')->fields(array('nid', 'title', 'tid', 'sticky', 'created', 'comment_count', 'last_comment_timestamp'));
+    foreach ($entity->taxonomy_youwos as $language) {
+      foreach ($language as $item) {
+        $query->values(array(
+          'nid' => $entity->nid,
+          'title' => $entity->title,
+          'tid' => $item['tid'],
+          'sticky' => $entity->sticky,
+          'created' => $entity->created,
+          'comment_count' => 0,
+          'last_comment_timestamp' => $entity->created,
+        ));
+      }
+    }
+    $query->execute();
+  }
+}
+
+/**
+ * Implements hook_field_storage_pre_update().
+ */
+function youwo_field_storage_pre_update($entity_type, $entity, &$skip_fields) {
+  $first_call = &drupal_static(__FUNCTION__, array());
+
+  if ($entity_type == 'node' && $entity->status && _youwo_node_check_node_type($entity)) {
+    // We don't maintain data for old revisions, so clear all previous values
+    // from the table. Since this hook runs once per field, per object, make
+    // sure we only wipe values once.
+    if (!isset($first_call[$entity->nid])) {
+      $first_call[$entity->nid] = FALSE;
+      db_delete('youwo_index')->condition('nid', $entity->nid)->execute();
+    }
+    // Only save data to the table if the node is published.
+    if ($entity->status) {
+      $query = db_insert('youwo_index')->fields(array('nid', 'title', 'tid', 'sticky', 'created', 'comment_count', 'last_comment_timestamp'));
+      foreach ($entity->taxonomy_youwos as $language) {
+        foreach ($language as $item) {
+          $query->values(array(
+            'nid' => $entity->nid,
+            'title' => $entity->title,
+            'tid' => $item['tid'],
+            'sticky' => $entity->sticky,
+            'created' => $entity->created,
+            'comment_count' => 0,
+            'last_comment_timestamp' => $entity->created,
+          ));
+        }
+      }
+      $query->execute();
+      // The logic for determining last_comment_count is fairly complex, so
+      // call _youwo_update_youwo_index() too.
+      _youwo_update_youwo_index($entity->nid); 
+	}
+  }
+}
+
+/**
+ * Implements hook_form_alter().
+ */
+function youwo_form_alter(&$form, $form_state, $form_id) {
+  $vid = variable_get('youwo_nav_vocabulary', 0);
+  if (isset($form['vid']) && $form['vid']['#value'] == $vid) {
+    // Hide critical options from youwo vocabulary.
+    if ($form_id == 'taxonomy_form_vocabulary') {
+      $form['help_youwo_vocab'] = array(
+        '#markup' => t('This is the designated youwo vocabulary. Some of the normal vocabulary options have been removed.'),
+        '#weight' => -1,
+      );
+      $form['hierarchy'] = array('#type' => 'value', '#value' => 1);
+      $form['delete']['#access'] = FALSE;
+    }
+    // Hide multiple parents select from youwo terms.
+    elseif ($form_id == 'taxonomy_form_term') {
+      $form['advanced']['parent']['#access'] = FALSE;
+    }
+  }
+  if (!empty($form['#node_edit_form']) && isset($form['taxonomy_youwos'])) {
+    $langcode = $form['taxonomy_youwos']['#language'];
+    // Make the vocabulary required for 'real' youwo-nodes.
+    $form['taxonomy_youwos'][$langcode]['#required'] = TRUE;
+    $form['taxonomy_youwos'][$langcode]['#multiple'] = FALSE;
+    if (empty($form['taxonomy_youwos'][$langcode]['#default_value'])) {
+      // If there is no default youwo already selected, try to get the youwo
+      // ID from the URL (e.g., if we are on a page like node/add/youwo/2, we
+      // expect "2" to be the ID of the youwo that was requested).
+      $requested_youwo_id = arg(3);
+      $form['taxonomy_youwos'][$langcode]['#default_value'] = is_numeric($requested_youwo_id) ? $requested_youwo_id : '';
+    }
+  }
+}
+
+/**
+ * Implements hook_block_info().
+ */
+function youwo_block_info() {
+  $blocks['active'] = array(
+    'info' => t('Active youwo topics'),
+    'cache' => DRUPAL_CACHE_CUSTOM,
+    'properties' => array('administrative' => TRUE),
+  );
+  $blocks['new'] = array(
+    'info' => t('New youwo topics'),
+    'cache' => DRUPAL_CACHE_CUSTOM,
+    'properties' => array('administrative' => TRUE),
+  );
+  return $blocks;
+}
+
+/**
+ * Implements hook_block_configure().
+ */
+function youwo_block_configure($delta = '') {
+  $form['youwo_block_num_' . $delta] = array('#type' => 'select', '#title' => t('Number of topics'), '#default_value' => variable_get('youwo_block_num_' . $delta, '5'), '#options' => drupal_map_assoc(array(2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20)));
+  return $form;
+}
+
+/**
+ * Implements hook_block_save().
+ */
+function youwo_block_save($delta = '', $edit = array()) {
+  variable_set('youwo_block_num_' . $delta, $edit['youwo_block_num_' . $delta]);
+}
+
+/**
+ * Implements hook_block_view().
+ *
+ * Generates a block containing the currently active youwo topics and the
+ * most recently added youwo topics.
+ */
+function youwo_block_view($delta = '') {
+  $query = db_select('youwo_index', 'f')
+    ->fields('f')
+    ->addTag('node_access');
+  switch ($delta) {
+    case 'active':
+      $title = t('Active youwo topics');
+      $query
+        ->orderBy('f.last_comment_timestamp', 'DESC')
+        ->range(0, variable_get('youwo_block_num_active', '5'));
+      break;
+
+    case 'new':
+      $title = t('New youwo topics');
+      $query
+        ->orderBy('f.created', 'DESC')
+        ->range(0, variable_get('youwo_block_num_new', '5'));
+      break;
+  }
+
+  $block['subject'] = $title;
+  // Cache based on the altered query. Enables us to cache with node access enabled.
+  $block['content'] = drupal_render_cache_by_query($query, 'youwo_block_view');
+  $block['content']['#access'] = user_access('access content');
+  return $block;
+}
+
+/**
+* A #pre_render callback. Lists nodes based on the element's #query property.
+*
+* @see youwo_block_view()
+*
+* @return
+*   A renderable array.
+*/
+function youwo_block_view_pre_render($elements) {
+  $result = $elements['#query']->execute();
+  if ($node_title_list = node_title_list($result)) {
+    $elements['youwo_list'] = $node_title_list;
+    $elements['youwo_more'] = array('#theme' => 'more_link', '#url' => 'youwo', '#title' => t('Read the latest youwo topics.'));
+  }
+  return $elements;
+}
+
+/**
+ * Implements hook_form().
+ */
+function youwo_form($node, $form_state) {
+  $type = node_type_get_type($node);
+  $form['title'] = array(
+    '#type' => 'textfield',
+    '#title' => check_plain($type->title_label),
+    '#default_value' => !empty($node->title) ? $node->title : '',
+    '#required' => TRUE, '#weight' => -5
+  );
+
+  if (!empty($node->nid)) {
+    $youwo_terms = $node->taxonomy_youwos;
+    $form['youwo_tid'] = array('#type' => 'value', '#value' => $node->youwo_tid);
+  }
+
+  return $form;
+}
+
+/**
+ * Returns a tree of all youwos for a given taxonomy term ID.
+ *
+ * @param $tid
+ *    (optional) Taxonomy ID of the youwo, if not givin all youwos will be returned.
+ * @return
+ *   A tree of taxonomy objects, with the following additional properties:
+ *    - 'num_topics': Number of topics in the youwo
+ *    - 'num_posts': Total number of posts in all topics
+ *    - 'last_post': Most recent post for the youwo
+ *    - 'youwos': An array of child youwos
+ */
+function youwo_youwo_load($tid = NULL) {
+  
+  global $user;
+
+  $cache = &drupal_static(__FUNCTION__, array());
+
+  // Return a cached youwo tree if available.
+  if (!isset($tid)) {
+    $tid = 0;
+  }
+  if (isset($cache[$tid])) {
+    return $cache[$tid];
+  }
+
+  $vid = variable_get('youwo_nav_vocabulary', 0);
+
+  // Load and validate the parent term.
+  if ($tid) {
+    $youwo_term = taxonomy_term_load($tid);
+    if (!$youwo_term || ($youwo_term->vid != $vid)) {
+      return $cache[$tid] = FALSE;
+    }
+  }
+  // If $tid is 0, create an empty object to hold the child terms.
+  elseif ($tid === 0) {
+    $youwo_term = (object) array(
+      'tid' => 0,
+    );
+  }
+
+  // Determine if the requested term is a container.
+  if (!$youwo_term->tid || in_array($youwo_term->tid, variable_get('youwo_containers', array()))) {
+    $youwo_term->container = 1;
+  }
+
+  // Load parent terms.
+  $youwo_term->parents = taxonomy_get_parents_all($youwo_term->tid);
+
+  // Load the tree below.
+  $youwos = array();
+  $_youwos = taxonomy_get_tree($vid, $tid);
+
+  if (count($_youwos)) {
+    $query = db_select('node', 'n');
+    $query->join('node_comment_statistics', 'ncs', 'n.nid = ncs.nid');
+    $query->join('youwo', 'f', 'n.vid = f.vid');
+	if (!user_access ('view private request', NULL)) {
+		$query->join('field_data_youwo_public', 'pub', 'pub.entity_id = n.nid');
+		$query->condition(db_or()->condition('pub.youwo_public_value', 0)->condition('n.uid', $user->uid));
+	}
+    $query->addExpression('COUNT(n.nid)', 'topic_count');
+    $query->addExpression('SUM(ncs.comment_count)', 'comment_count');
+    $counts = $query
+      ->fields('f', array('tid'))
+      ->condition('status', 1)
+      ->groupBy('tid')
+      ->addTag('node_access')
+      ->execute()
+      ->fetchAllAssoc('tid');
+  }
+
+  foreach ($_youwos as $youwo) {
+    // Determine if the child term is a container.
+    if (in_array($youwo->tid, variable_get('youwo_containers', array()))) {
+      $youwo->container = 1;
+    }
+
+    // Merge in the topic and post counters.
+    if (!empty($counts[$youwo->tid])) {
+      $youwo->num_topics = $counts[$youwo->tid]->topic_count;
+      $youwo->num_posts = $counts[$youwo->tid]->topic_count + $counts[$youwo->tid]->comment_count;
+    }
+    else {
+      $youwo->num_topics = 0;
+      $youwo->num_posts = 0;
+    }
+
+    // Query "Last Post" information for this youwo.
+    $query = db_select('node', 'n');
+    $query->join('users', 'u1', 'n.uid = u1.uid');
+    $query->join('youwo', 'f', 'n.vid = f.vid AND f.tid = :tid', array(':tid' => $youwo->tid));
+    $query->join('node_comment_statistics', 'ncs', 'n.nid = ncs.nid');
+    $query->join('users', 'u2', 'ncs.last_comment_uid = u2.uid');
+	if (!user_access ('view private request', NULL)) {
+		$query->join('field_data_youwo_public', 'pub', 'pub.entity_id = n.nid');
+		$query->condition(db_or()->condition('pub.youwo_public_value', 0)->condition('n.uid', $user->uid));
+	}
+    $query->addExpression('CASE ncs.last_comment_uid WHEN 0 THEN ncs.last_comment_name ELSE u2.name END', 'last_comment_name');
+
+
+    $topic = $query
+      ->fields('ncs', array('last_comment_timestamp', 'last_comment_uid'))
+      ->condition('n.status', 1)
+      ->orderBy('last_comment_timestamp', 'DESC')
+      ->range(0, 1)
+      ->addTag('node_access')
+      ->execute()
+      ->fetchObject();
+
+    // Merge in the "Last Post" information.
+    $last_post = new stdClass();
+    if (!empty($topic->last_comment_timestamp)) {
+      $last_post->created = $topic->last_comment_timestamp;
+      $last_post->name = $topic->last_comment_name;
+      $last_post->uid = $topic->last_comment_uid;
+    }
+    $youwo->last_post = $last_post;
+
+    $youwos[$youwo->tid] = $youwo;
+  }
+
+  // Cache the result, and return the tree.
+  $youwo_term->youwos = $youwos;
+  $cache[$tid] = $youwo_term;
+  return $youwo_term;
+}
+
+/**
+ * Calculate the number of nodes the user has not yet read and are newer
+ * than NODE_NEW_LIMIT.
+ */
+function _youwo_topics_unread($term, $uid) {
+  $query = db_select('node', 'n');
+  $query->join('youwo', 'f', 'n.vid = f.vid AND f.tid = :tid', array(':tid' => $term));
+  $query->leftJoin('history', 'h', 'n.nid = h.nid AND h.uid = :uid', array(':uid' => $uid));
+  $query->addExpression('COUNT(n.nid)', 'count');
+  return $query
+    ->condition('status', 1)
+    ->condition('n.created', NODE_NEW_LIMIT, '>')
+    ->isNull('h.nid')
+    ->addTag('node_access')
+    ->execute()
+    ->fetchField();
+}
+
+function youwo_get_topics($tid, $sortby, $youwo_per_page) {
+  global $user, $youwo_topic_list_header;
+
+  $youwo_topic_list_header = array(
+    NULL,
+    array('data' => t('Topic'), 'field' => 'f.title'),
+    array('data' => t('Replies'), 'field' => 'f.comment_count'),
+    array('data' => t('Last reply'), 'field' => 'f.last_comment_timestamp'),
+	array('data' => '状态', 'field' => 'r.request_status'),
+  );
+
+  $order = _youwo_get_topic_order($sortby);
+  for ($i = 0; $i < count($youwo_topic_list_header); $i++) {
+    if ($youwo_topic_list_header[$i]['field'] == $order['field']) {
+      $youwo_topic_list_header[$i]['sort'] = $order['sort'];
+    }
+  }
+
+  $query = db_select('youwo_index', 'f')->extend('PagerDefault')->extend('TableSort');
+  $query->fields('f');
+  $query
+    ->condition('f.tid', $tid)
+    ->addTag('node_access')
+    ->orderBy('f.sticky', 'DESC')
+    ->orderByHeader($youwo_topic_list_header)
+    ->limit($youwo_per_page);
+
+  $count_query = db_select('youwo_index', 'f');
+  $count_query->condition('f.tid', $tid);
+  $count_query->addExpression('COUNT(*)');
+  $count_query->addTag('node_access');
+
+  $query->setCountQuery($count_query);
+  $result = $query->execute();
+  $nids = array();
+  foreach ($result as $record) {
+    $nids[] = $record->nid;
+  }
+  if ($nids) {
+    $query = db_select('node', 'n')->extend('TableSort');
+    $query->fields('n', array('title', 'nid', 'type', 'sticky', 'created', 'uid'));
+    $query->addField('n', 'comment', 'comment_mode');
+
+    $query->join('node_comment_statistics', 'ncs', 'n.nid = ncs.nid');
+    $query->fields('ncs', array('cid', 'last_comment_uid', 'last_comment_timestamp', 'comment_count'));
+	$query->join('youwo_request', 'r', 'n.nid = r.nid');
+	$query->addField('r', 'request_status');
+
+    $query->join('youwo_index', 'f', 'f.nid = ncs.nid');
+    $query->addField('f', 'tid', 'youwo_tid');
+
+    $query->join('users', 'u', 'n.uid = u.uid');
+    $query->addField('u', 'name');
+
+    $query->join('users', 'u2', 'ncs.last_comment_uid = u2.uid');
+
+	if (!user_access ('view private request', NULL)) {
+		$query->join('field_data_youwo_public', 'pub', 'pub.entity_id = n.nid');
+		$query->condition(db_or()->condition('pub.youwo_public_value', 0)->condition('n.uid', $user->uid));
+	}
+
+    $query->addExpression('CASE ncs.last_comment_uid WHEN 0 THEN ncs.last_comment_name ELSE u2.name END', 'last_comment_name');
+
+    $query
+      ->orderBy('f.sticky', 'DESC')
+      ->orderByHeader($youwo_topic_list_header)
+      ->condition('n.nid', $nids);
+
+    $result = $query->execute();
+  }
+  else {
+    $result = array();
+  }
+
+  $topics = array();
+  $first_new_found = FALSE;
+  foreach ($result as $topic) {
+    if ($user->uid) {
+      // folder is new if topic is new or there are new comments since last visit
+      if ($topic->youwo_tid != $tid) {
+        $topic->new = 0;
+      }
+      else {
+        $history = _youwo_user_last_visit($topic->nid);
+        $topic->new_replies = comment_num_new($topic->nid, $history);
+        $topic->new = $topic->new_replies || ($topic->last_comment_timestamp > $history);
+      }
+    }
+    else {
+      // Do not track "new replies" status for topics if the user is anonymous.
+      $topic->new_replies = 0;
+      $topic->new = 0;
+    }
+
+    // Make sure only one topic is indicated as the first new topic.
+    $topic->first_new = FALSE;
+    if ($topic->new != 0 && !$first_new_found) {
+      $topic->first_new = TRUE;
+      $first_new_found = TRUE;
+    }
+
+    if ($topic->comment_count > 0) {
+      $last_reply = new stdClass();
+      $last_reply->created = $topic->last_comment_timestamp;
+      $last_reply->name = $topic->last_comment_name;
+      $last_reply->uid = $topic->last_comment_uid;
+      $topic->last_reply = $last_reply;
+    }
+
+	$topic->request_status = get_request_status_str($topic->request_status);
+    $topics[] = $topic;
+  }
+
+  return $topics;
+}
+
+/**
+ * Process variables for youwos.tpl.php
+ *
+ * The $variables array contains the following arguments:
+ * - $youwos
+ * - $topics
+ * - $parents
+ * - $tid
+ * - $sortby
+ * - $youwo_per_page
+ *
+ * @see youwos.tpl.php
+ */
+function template_preprocess_youwos(&$variables) {
+  global $user;
+
+  $vid = variable_get('youwo_nav_vocabulary', 0);
+  $vocabulary = taxonomy_vocabulary_load($vid);
+  $title = !empty($vocabulary->name) ? $vocabulary->name : '';
+
+  // Breadcrumb navigation:
+  $breadcrumb[] = l(t('Home'), NULL);
+  if ($variables['tid']) {
+    $breadcrumb[] = l($vocabulary->name, 'youwo');
+  }
+  if ($variables['parents']) {
+    $variables['parents'] = array_reverse($variables['parents']);
+    foreach ($variables['parents'] as $p) {
+      if ($p->tid == $variables['tid']) {
+        $title = $p->name;
+      }
+      else {
+        $breadcrumb[] = l($p->name, 'youwo/' . $p->tid);
+      }
+    }
+  }
+  drupal_set_breadcrumb($breadcrumb);
+  drupal_set_title($title);
+
+  if ($variables['youwos_defined'] = count($variables['youwos']) || count($variables['parents'])) {
+    if (!empty($variables['youwos'])) {
+      $variables['youwos'] = theme('youwo_list', $variables);
+    }
+    else {
+      $variables['youwos'] = '';
+    }
+
+    if ($variables['tid'] && !in_array($variables['tid'], variable_get('youwo_containers', array()))) {
+      $variables['topics'] = theme('youwo_topic_list', $variables);
+      drupal_add_feed('taxonomy/term/' . $variables['tid'] . '/feed', 'RSS - ' . $title);
+    }
+    else {
+      $variables['topics'] = '';
+    }
+
+    // Provide separate template suggestions based on what's being output. Topic id is also accounted for.
+    // Check both variables to be safe then the inverse. Youwos with topic ID's take precedence.
+    if ($variables['youwos'] && !$variables['topics']) {
+      $variables['theme_hook_suggestions'][] = 'youwos__containers';
+      $variables['theme_hook_suggestions'][] = 'youwos__' . $variables['tid'];
+      $variables['theme_hook_suggestions'][] = 'youwos__containers__' . $variables['tid'];
+    }
+    elseif (!$variables['youwos'] && $variables['topics']) {
+      $variables['theme_hook_suggestions'][] = 'youwos__topics';
+      $variables['theme_hook_suggestions'][] = 'youwos__' . $variables['tid'];
+      $variables['theme_hook_suggestions'][] = 'youwos__topics__' . $variables['tid'];
+    }
+    else {
+      $variables['theme_hook_suggestions'][] = 'youwos__' . $variables['tid'];
+    }
+
+  }
+  else {
+    drupal_set_title(t('No youwos defined'));
+    $variables['youwos'] = '';
+    $variables['topics'] = '';
+  }
+}
+
+/**
+ * Process variables to format a youwo listing.
+ *
+ * $variables contains the following information:
+ * - $youwos
+ * - $parents
+ * - $tid
+ *
+ * @see youwo-list.tpl.php
+ * @see theme_youwo_list()
+ */
+function template_preprocess_youwo_list(&$variables) {
+  global $user;
+  $row = 0;
+  // Sanitize each youwo so that the template can safely print the data.
+  foreach ($variables['youwos'] as $id => $youwo) {
+    $variables['youwos'][$id]->description = !empty($youwo->description) ? filter_xss_admin($youwo->description) : '';
+    $variables['youwos'][$id]->link = url("youwo/$youwo->tid");
+    $variables['youwos'][$id]->name = check_plain($youwo->name);
+    $variables['youwos'][$id]->is_container = !empty($youwo->container);
+    $variables['youwos'][$id]->zebra = $row % 2 == 0 ? 'odd' : 'even';
+    $row++;
+
+    $variables['youwos'][$id]->new_text = '';
+    $variables['youwos'][$id]->new_url = '';
+    $variables['youwos'][$id]->new_topics = 0;
+    $variables['youwos'][$id]->old_topics = $youwo->num_topics;
+    if ($user->uid) {
+      $variables['youwos'][$id]->new_topics = _youwo_topics_unread($youwo->tid, $user->uid);
+      if ($variables['youwos'][$id]->new_topics) {
+        $variables['youwos'][$id]->new_text = format_plural($variables['youwos'][$id]->new_topics, '1 new', '@count new');
+        $variables['youwos'][$id]->new_url = url("youwo/$youwo->tid", array('fragment' => 'new'));
+      }
+      $variables['youwos'][$id]->old_topics = $youwo->num_topics - $variables['youwos'][$id]->new_topics;
+    }
+    $variables['youwos'][$id]->last_reply = theme('youwo_submitted', array('topic' => $youwo->last_post));
+  }
+  // Give meaning to $tid for themers. $tid actually stands for term id.
+  $variables['youwo_id'] = $variables['tid'];
+  unset($variables['tid']);
+}
+
+/**
+ * Preprocess variables to format the topic listing.
+ *
+ * $variables contains the following data:
+ * - $tid
+ * - $topics
+ * - $sortby
+ * - $youwo_per_page
+ *
+ * @see youwo-topic-list.tpl.php
+ * @see theme_youwo_topic_list()
+ */
+function template_preprocess_youwo_topic_list(&$variables) {
+  global $youwo_topic_list_header;
+
+  // Create the tablesorting header.
+  $ts = tablesort_init($youwo_topic_list_header);
+  $header = '';
+  foreach ($youwo_topic_list_header as $cell) {
+    $cell = tablesort_header($cell, $youwo_topic_list_header, $ts);
+    $header .= _theme_table_cell($cell, TRUE);
+  }
+  $variables['header'] = $header;
+
+  if (!empty($variables['topics'])) {
+    $row = 0;
+    foreach ($variables['topics'] as $id => $topic) {
+      $variables['topics'][$id]->icon = theme('youwo_icon', array('new_posts' => $topic->new, 'num_posts' => $topic->comment_count, 'comment_mode' => $topic->comment_mode, 'sticky' => $topic->sticky, 'first_new' => $topic->first_new));
+      $variables['topics'][$id]->zebra = $row % 2 == 0 ? 'odd' : 'even';
+      $row++;
+
+      // We keep the actual tid in youwo table, if it's different from the
+      // current tid then it means the topic appears in two youwos, one of
+      // them is a shadow copy.
+      if ($variables['tid'] != $topic->youwo_tid) {
+        $variables['topics'][$id]->moved = TRUE;
+        $variables['topics'][$id]->title = check_plain($topic->title);
+        $variables['topics'][$id]->message = l(t('This topic has been moved'), "youwo/$topic->youwo_tid");
+      }
+      else {
+        $variables['topics'][$id]->moved = FALSE;
+        $variables['topics'][$id]->title = l($topic->title, "node/$topic->nid");
+        $variables['topics'][$id]->message = '';
+      }
+      $topic->uid = $topic->last_comment_uid ? $topic->last_comment_uid : $topic->uid;
+      $variables['topics'][$id]->created = theme('youwo_submitted', array('topic' => $topic));
+      $variables['topics'][$id]->last_reply = theme('youwo_submitted', array('topic' => isset($topic->last_reply) ? $topic->last_reply : NULL));
+
+      $variables['topics'][$id]->new_text = '';
+      $variables['topics'][$id]->new_url = '';
+      if ($topic->new_replies) {
+        $variables['topics'][$id]->new_text = format_plural($topic->new_replies, '1 new', '@count new');
+        $variables['topics'][$id]->new_url = url("node/$topic->nid", array('query' => comment_new_page_count($topic->comment_count, $topic->new_replies, $topic), 'fragment' => 'new'));
+      }
+
+    }
+  }
+  else {
+    // Make this safe for the template
+    $variables['topics'] = array();
+  }
+  // Give meaning to $tid for themers. $tid actually stands for term id.
+  $variables['topic_id'] = $variables['tid'];
+  unset($variables['tid']);
+
+  $variables['pager'] = theme('pager');
+}
+
+/**
+ * Process variables to format the icon for each individual topic.
+ *
+ * $variables contains the following data:
+ * - $new_posts
+ * - $num_posts = 0
+ * - $comment_mode = 0
+ * - $sticky = 0
+ * - $first_new
+ *
+ * @see youwo-icon.tpl.php
+ * @see theme_youwo_icon()
+ */
+function template_preprocess_youwo_icon(&$variables) {
+  $variables['hot_threshold'] = variable_get('youwo_hot_topic', 15);
+  if ($variables['num_posts'] > $variables['hot_threshold']) {
+    $variables['icon_class'] = $variables['new_posts'] ? 'hot-new' : 'hot';
+    $variables['icon_title'] = $variables['new_posts'] ? t('Hot topic, new comments') : t('Hot topic');
+  }
+  else {
+    $variables['icon_class'] = $variables['new_posts'] ? 'new' : 'default';
+    $variables['icon_title'] = $variables['new_posts'] ? t('New comments') : t('Normal topic');
+  }
+
+  if ($variables['comment_mode'] == COMMENT_NODE_CLOSED || $variables['comment_mode'] == COMMENT_NODE_HIDDEN) {
+    $variables['icon_class'] = 'closed';
+    $variables['icon_title'] = t('Closed topic');
+  }
+
+  if ($variables['sticky'] == 1) {
+    $variables['icon_class'] = 'sticky';
+    $variables['icon_title'] = t('Sticky topic');
+  }
+}
+
+/**
+ * Process variables to format submission info for display in the youwo list and topic list.
+ *
+ * $variables will contain: $topic
+ *
+ * @see youwo-submitted.tpl.php
+ * @see theme_youwo_submitted()
+ */
+function template_preprocess_youwo_submitted(&$variables) {
+  $variables['author'] = isset($variables['topic']->uid) ? theme('username', array('account' => $variables['topic'])) : '';
+  $variables['time'] = isset($variables['topic']->created) ? format_interval(REQUEST_TIME - $variables['topic']->created) : '';
+}
+
+function _youwo_user_last_visit($nid) {
+  global $user;
+  $history = &drupal_static(__FUNCTION__, array());
+
+  if (empty($history)) {
+    $result = db_query('SELECT nid, timestamp FROM {history} WHERE uid = :uid', array(':uid' => $user->uid));
+    foreach ($result as $t) {
+      $history[$t->nid] = $t->timestamp > NODE_NEW_LIMIT ? $t->timestamp : NODE_NEW_LIMIT;
+    }
+  }
+  return isset($history[$nid]) ? $history[$nid] : NODE_NEW_LIMIT;
+}
+
+function _youwo_get_topic_order($sortby) {
+  switch ($sortby) {
+    case 1:
+      return array('field' => 'f.last_comment_timestamp', 'sort' => 'desc');
+      break;
+    case 2:
+      return array('field' => 'f.last_comment_timestamp', 'sort' => 'asc');
+      break;
+    case 3:
+      return array('field' => 'f.comment_count', 'sort' => 'desc');
+      break;
+    case 4:
+      return array('field' => 'f.comment_count', 'sort' => 'asc');
+      break;
+  }
+}
+
+/**
+ * Updates the taxonomy index for a given node.
+ *
+ * @param $nid
+ *   The ID of the node to update.
+ */
+function _youwo_update_youwo_index($nid) {
+  $count = db_query('SELECT COUNT(cid) FROM {comment} WHERE nid = :nid AND status = :status', array(
+    ':nid' => $nid,
+    ':status' => COMMENT_PUBLISHED,
+  ))->fetchField();
+
+  if ($count > 0) {
+    // Comments exist.
+    $last_reply = db_query_range('SELECT cid, name, created, uid FROM {comment} WHERE nid = :nid AND status = :status ORDER BY cid DESC', 0, 1, array(
+      ':nid' => $nid,
+      ':status' => COMMENT_PUBLISHED,
+    ))->fetchObject();
+    db_update('youwo_index')
+      ->fields( array(
+        'comment_count' => $count,
+        'last_comment_timestamp' => $last_reply->created,
+      ))
+      ->condition('nid', $nid)
+      ->execute();
+  }
+  else {
+    // Comments do not exist.
+    $node = db_query('SELECT uid, created FROM {node} WHERE nid = :nid', array(':nid' => $nid))->fetchObject();
+    db_update('youwo_index')
+      ->fields( array(
+        'comment_count' => 0,
+        'last_comment_timestamp' => $node->created,
+      ))
+      ->condition('nid', $nid)
+      ->execute();
+  }
+}
+
+/**
+ * Implements hook_rdf_mapping().
+ */
+function youwo_rdf_mapping() {
+  return array(
+    array(
+      'type' => 'node',
+      'bundle' => 'youwo',
+      'mapping' => array(
+        'rdftype' => array('sioc:Post', 'sioct:BoardPost'),
+        'taxonomy_youwos' => array(
+          'predicates' => array('sioc:has_container'),
+          'type' => 'rel',
+        ),
+      ),
+    ),
+    array(
+      'type' => 'taxonomy_term',
+      'bundle' => 'youwos',
+      'mapping' => array(
+        'rdftype' => array('sioc:Container', 'sioc:Youwo'),
+      ),
+    ),
+  );
+}
+function template_preprocess_my_requests(&$variables) {
+  global $user_topic_list_header;
+
+  // Create the tablesorting header.
+  $ts = tablesort_init($user_topic_list_header);
+  $header = '';
+  foreach ($user_topic_list_header as $cell) {
+    $cell = tablesort_header($cell, $user_topic_list_header, $ts);
+    $header .= _theme_table_cell($cell, TRUE);
+  }
+  $variables['header'] = $header;
+
+  if (!empty($variables['topics'])) {
+    $row = 0;
+    foreach ($variables['topics'] as $id => $topic) {
+      $variables['topics'][$id]->icon = theme('youwo_icon', array('new_posts' => $topic->new, 'num_posts' => $topic->comment_count, 'comment_mode' => $topic->comment_mode, 'sticky' => $topic->sticky, 'first_new' => $topic->first_new));
+      $variables['topics'][$id]->zebra = $row % 2 == 0 ? 'odd' : 'even';
+      $row++;
+
+     $variables['topics'][$id]->moved = FALSE;
+     $variables['topics'][$id]->title = l($topic->title, "node/$topic->nid");
+     $variables['topics'][$id]->message = '';
+      
+      $topic->uid = $topic->last_comment_uid ? $topic->last_comment_uid : $topic->uid;
+      $variables['topics'][$id]->created = theme('youwo_submitted', array('topic' => $topic));
+      $variables['topics'][$id]->last_reply = theme('youwo_submitted', array('topic' => isset($topic->last_reply) ? $topic->last_reply : NULL));
+
+      $variables['topics'][$id]->new_text = '';
+      $variables['topics'][$id]->new_url = '';
+      if ($topic->new_replies) {
+        $variables['topics'][$id]->new_text = format_plural($topic->new_replies, '1 new', '@count new');
+        $variables['topics'][$id]->new_url = url("node/$topic->nid", array('query' => comment_new_page_count($topic->comment_count, $topic->new_replies, $topic), 'fragment' => 'new'));
+      }
+
+    }
+  }
+  else {
+    // Make this safe for the template
+    $variables['topics'] = array();
+  }
+  // Give meaning to $tid for themers. $tid actually stands for term id.
+  unset($variables['tid']);
+
+  $variables['pager'] = theme('pager');
+}
