@@ -323,6 +323,9 @@ function youwo_node_view($node, $view_mode) {
       // Breadcrumb navigation
       $breadcrumb[] = l(t('Home'), NULL);
       $breadcrumb[] = l($vocabulary->name, 'youwo');
+      if (empty($node->youwo_tid)) {
+         $node->youwo_tid = 0;
+      }
       if ($parents = taxonomy_get_parents_all($node->youwo_tid)) {
         $parents = array_reverse($parents);
         foreach ($parents as $parent) {
@@ -382,7 +385,10 @@ function youwo_node_presave($node) {
     $node->icon = !empty($node->icon) ? $node->icon : '';
     reset($node->taxonomy_youwos);
     $langcode = key($node->taxonomy_youwos);
-    if (!empty($node->taxonomy_youwos[$langcode])) {
+	if (empty($node->youwo_tid)) {
+		$node->youwo_tid = 0;
+	}
+    if (!empty($node->taxonomy_youwos[$langcode]) && !empty($node->nid)) {
       $node->youwo_tid = $node->taxonomy_youwos[$langcode][0]['tid'];
       $old_tid = db_query_range("SELECT f.tid FROM {youwo} f INNER JOIN {node} n ON f.vid = n.vid WHERE n.nid = :nid ORDER BY f.vid DESC", 0, 1, array(':nid' => $node->nid))->fetchField();
       if ($old_tid && isset($node->youwo_tid) && ($node->youwo_tid != $old_tid) && !empty($node->shadow)) {
@@ -797,6 +803,9 @@ function youwo_form($node, $form_state) {
 
   if (!empty($node->nid)) {
     $youwo_terms = $node->taxonomy_youwos;
+	if (empty($node->youwo_tid)) {
+		$node->youwo_tid = 0;
+	}
     $form['youwo_tid'] = array('#type' => 'value', '#value' => $node->youwo_tid);
   }
 
