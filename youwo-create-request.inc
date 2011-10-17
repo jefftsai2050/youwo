@@ -1,5 +1,7 @@
 <?php
 
+include 'modules/node/node.pages.inc';
+
 function youwo_create_request_form($form, &$form_state, $node) {
 
   // Initialize a description of the steps for the wizard.
@@ -49,6 +51,7 @@ function youwo_create_request_form($form, &$form_state, $node) {
       '#type' => 'submit',
       '#value' => t('提交'),
 	  '#weight' => 21,
+	  '#submit' => array('youwo_request_form_submit'),
     );
   }
 
@@ -207,6 +210,18 @@ function youwo_form_create_request_2($form, &$form_state, $node) {
 }
 
 function youwo_form_create_request_3($form, &$form_state, $node) {
+
+	if (!isset($form_state['node'])) {
+		if (!isset($node->title)) {
+			$node->title = NULL;
+		}
+		node_object_prepare($node);
+		$form_state['node'] = $node;
+	}
+	else {
+		$node = $form_state['node'];
+	}
+
 	$result = '标题：' . $form_state['step_information'][1]['stored_values']['title'];
 	$result .= '<br>' . '期望的费用：' . $form_state['step_information'][2]['stored_values']['youwo_expected_fee']['und'][0]['value'];
 	$priority = $form_state['step_information'][2]['stored_values']['youwo_priority']['und'][0]['value'];
@@ -230,6 +245,13 @@ function youwo_form_create_request_3($form, &$form_state, $node) {
 	);
 	return $form;
 }
+
+function youwo_request_form_submit($form, &$form_state) {
+
+	$form_state['values'] = array_merge($form_state['step_information'][1]['stored_values'], $form_state['step_information'][2]['stored_values'], $form_state['values']);
+	node_form_submit($form, $form_state);
+}
+
 
 /*
 	// get all terms
