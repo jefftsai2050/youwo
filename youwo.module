@@ -137,7 +137,6 @@ function youwo_menu() {
      'title' => '发布请求',
 	 'page callback' => 'youwo_create_request',
 	 'access arguments' => array('access request'),
-	 'type' => MENU_CALLBACK,
 	 'file' => 'youwo-create-request.inc',
   );
   $items['youwo/my_score'] = array(

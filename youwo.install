@@ -135,7 +135,7 @@ function _youwo_add_menu_link() {
 
     $menu_link = array(
 	   'link_title' => '发布请求',
-	   'link_path' => 'node/add/youwo',
+	   'link_path' => 'youwo/create_request',
 	   'module' => 'youwo',
 	);
 	menu_link_save($menu_link);
@@ -143,7 +143,7 @@ function _youwo_add_menu_link() {
 }
 
 function _youwo_remove_menu_link() {
-    menu_link_delete(NULL, 'node/add/youwo');
+    menu_link_delete(NULL, 'youwo/create_request');
 	menu_cache_clear_all();
 }
 
@@ -344,7 +344,7 @@ function youwo_enable() {
 
   _youwo_create_field_and_instance();
 
-  _youwo_add_menu_link();
+//  _youwo_add_menu_link();
 }
 
 /**
