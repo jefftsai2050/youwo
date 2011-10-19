@@ -4,8 +4,6 @@
  * @file
  * User page callbacks for the youwo module.
  */
-include_once 'youwo-field.inc';
-
 /**
  * Menu callback; prints a youwo listing.
  */
