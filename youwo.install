@@ -92,6 +92,7 @@ function _get_youwo_install_term($vid) {
 				    'description' => '所有不包含在以上类别中的请求',
 					'parent' =>0,
 					'vid' => $vid,
+					'weight' => 20,
 					'container' => 0),
 		);
 
