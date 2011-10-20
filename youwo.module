@@ -387,9 +387,9 @@ function youwo_node_presave($node) {
 	if (empty($node->youwo_tid)) {
 		$node->youwo_tid = 0;
 	}
-    if (!empty($node->taxonomy_youwos[$langcode]) && !empty($node->nid)) {
+    if (!empty($node->taxonomy_youwos[$langcode])) {
       $node->youwo_tid = $node->taxonomy_youwos[$langcode][0]['tid'];
-      $old_tid = db_query_range("SELECT f.tid FROM {youwo} f INNER JOIN {node} n ON f.vid = n.vid WHERE n.nid = :nid ORDER BY f.vid DESC", 0, 1, array(':nid' => $node->nid))->fetchField();
+      $old_tid = db_query_range("SELECT f.tid FROM {youwo} f INNER JOIN {node} n ON f.vid = n.vid WHERE n.nid = :nid ORDER BY f.vid DESC", 0, 1, array(':nid' => empty($node->nid)? 0: $node->nid))->fetchField();
       if ($old_tid && isset($node->youwo_tid) && ($node->youwo_tid != $old_tid) && !empty($node->shadow)) {
         // A shadow copy needs to be created. Retain new term and add old term.
         $node->taxonomy_youwos[$langcode][] = array('tid' => $old_tid);
