@@ -136,18 +136,56 @@ function youwo_form_create_request_1($form, &$form_state, $node) {
 	}
 
 
+/*
+  $form['ask_last_name'] = array(
+   '#type' => 'checkbox',
+   '#title' => t('Ask me my last name'),
+    '#ajax' => array(
+      'callback' => 'parent_class_callback',
+      'wrapper' => 'textfields',
+      'effect' => 'fade',
+    ),
+  ); */
+
+  $form['class_fieldset'] = array(
+    '#title' => t('您要提出哪类请求?'),
+    '#prefix' => '<div id="class_fieldset_div">',
+    '#suffix' => '</div>',
+    '#type' => 'fieldset',
+  );
+	$form['class_fieldset']['parent_class'] = array(
+		'#type' => 'select',
+		'#title' => '大类',
+		'#options' => array(1=>'o1', 2=> 'o2'),
+		'#ajax' => array(
+		    'callback' => 'parent_class_callback',
+			'wrapper' => 'class_fieldset_div',
+			'effect' => 'fade',
+		),
+	);
+
+  if (!empty($form_state['values']['parent_class'])) {
+    $form['class_fieldset']['child_class'] = array(
+			'#type' => 'select',
+			'#title' => '小类',
+			'#options' => array(0 => 'o11', 1 => 'o21'),
+		);
+  }
 
 
+	/*
 	$field = field_info_field('taxonomy_youwos');
 	$instance = field_info_instance('node', 'taxonomy_youwos', 'youwo');
 	$result = field_default_form('node', $node, $field, $instance, 
 	     LANGUAGE_NONE, array(), $form, $form_state);
+	var_dump($result);
 	$form += (array) $result;
 
 	if (!empty($form_state['values']['taxonomy_youwos'])) {
 		$form['taxonomy_youwos']['und']['#default_value'] = 
 				$form_state['values']['taxonomy_youwos']['und'][0];
-	}
+	}*/
+
 
 	$field = field_info_field('body');
 	$instance = field_info_instance('node', 'body', 'youwo');
@@ -178,6 +216,10 @@ function youwo_form_create_request_1($form, &$form_state, $node) {
 	$form += (array) $result;
 
 	return $form;
+}
+
+function parent_class_callback($form, $form_state) {
+  return $form['class_fieldset'];
 }
 
 function youwo_form_create_request_2($form, &$form_state, $node) {
