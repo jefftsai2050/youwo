@@ -135,7 +135,6 @@ function youwo_form_create_request_1($form, &$form_state, $node) {
 			array('#type' => 'value', '#value' => $node->youwo_tid);
 	}
 
-	/*
 	$par_classes = array();
 
 	$vid = variable_get('youwo_nav_vocabulary');
@@ -159,7 +158,7 @@ function youwo_form_create_request_1($form, &$form_state, $node) {
 			'wrapper' => 'class_fieldset_div',
 			'effect' => 'fade',
 		),
-	);*/
+	);
 
   if (!empty($form_state['values']['parent_class'])) {
   	$parent_id = $form_state['values']['parent_class'];
@@ -176,6 +175,7 @@ function youwo_form_create_request_1($form, &$form_state, $node) {
   }
 
 
+	/*
 	$field = field_info_field('taxonomy_youwos');
 	$instance = field_info_instance('node', 'taxonomy_youwos', 'youwo');
 	$result = field_default_form('node', $node, $field, $instance, 
@@ -185,7 +185,8 @@ function youwo_form_create_request_1($form, &$form_state, $node) {
 	if (!empty($form_state['values']['taxonomy_youwos'])) {
 		$form['taxonomy_youwos']['und']['#default_value'] = 
 				$form_state['values']['taxonomy_youwos']['und'][0];
-	}
+	}*/
+
 
 
 	$field = field_info_field('body');
@@ -226,6 +227,7 @@ function parent_class_callback($form, $form_state) {
 function youwo_form_create_request_2($form, &$form_state, $node) {
 
 	$form += array('#parents' => array());
+	var_dump ($form_state['step_information'][1]['stored_values']);
 
 	$field = field_info_field('youwo_expected_fee');
 	$instance = field_info_instance('node', 'youwo_expected_fee', 'youwo');
@@ -292,6 +294,7 @@ function youwo_form_create_request_3($form, &$form_state, $node) {
 function youwo_request_form_submit($form, &$form_state) {
 
 	$form_state['values'] = array_merge($form_state['step_information'][1]['stored_values'], $form_state['step_information'][2]['stored_values'], $form_state['values']);
+	$form_state['values']['taxonomy_youwos']['und'][0]['tid'] = $form_state['step_information'][1]['stored_values']['child_class'];
 	node_form_submit($form, $form_state);
 }
 
