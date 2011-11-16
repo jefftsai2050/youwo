@@ -153,6 +153,7 @@ function youwo_form_create_request_1($form, &$form_state, $node) {
 		'#type' => 'select',
 		'#title' => '大类',
 		'#options' => $par_classes,
+		'#required' => TRUE,
 		'#ajax' => array(
 		    'callback' => 'parent_class_callback',
 			'wrapper' => 'class_fieldset_div',
@@ -170,6 +171,7 @@ function youwo_form_create_request_1($form, &$form_state, $node) {
     $form['class_fieldset']['child_class'] = array(
 			'#type' => 'select',
 			'#title' => '小类',
+			'#required' => TRUE,
 			'#options' => $sub_classes,
 		);
   }
@@ -186,8 +188,6 @@ function youwo_form_create_request_1($form, &$form_state, $node) {
 		$form['taxonomy_youwos']['und']['#default_value'] = 
 				$form_state['values']['taxonomy_youwos']['und'][0];
 	}*/
-
-
 
 	$field = field_info_field('body');
 	$instance = field_info_instance('node', 'body', 'youwo');
