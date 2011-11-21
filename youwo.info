@@ -12,6 +12,6 @@ stylesheets[all][] = youwo-layout.css
 stylesheets[all][] = youwo-font.css
 
 ; Information added by drupal.org packaging script on 2011-06-30
-version = "7.8"
+version = "7.9"
 project = "drupal"
 datestamp = "1309397516"

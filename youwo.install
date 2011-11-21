@@ -368,6 +368,78 @@ function youwo_uninstall() {
   _youwo_remove_menu_link();
 }
 
+function _service_schema(&$schema) {
+  $schema['youwo_company'] = array(
+    'description' => 'All company information.',
+	'fields' => array(
+	   'company_id' => array(
+	      'type' => 'serial',
+		  'unsigned' => TRUE,
+		  'not null' => TRUE,
+		  'description' => 'The id of the company.',
+		),
+	   'company_name' => array(
+	      'type' => 'varchar',
+		  'length' => 64,
+		  'not null' => TRUE,
+		  'description' => 'The full name of the company.',
+		),
+	   'company_brief_name' => array(
+	      'type' => 'varchar',
+		  'length' => 16,
+		  'description' => 'The brief name of the company',
+	    ),
+	   'create_date' => array(
+	      'type' => 'int',
+		  'unsigned' => TRUE,
+		  'description' => 'The unix timestamp of ithe create date of the company',
+	    ),
+	   'address' => array(
+	      'type' => 'varchar',
+		  'length' => 255,
+		  'description' => 'Address of the company',
+	    ),
+	   'e-mail' => array(
+	      'type' => 'varchar',
+		  'length' => 64,
+		  'description' => 'email of the company',
+	    ),
+	   'phone1' => array(
+	      'type' => 'varchar',
+		  'length' => 16,
+		  'description' => 'phone1 of the company',
+	    ),
+	   'phone2' => array(
+	      'type' => 'varchar',
+		  'length' => 16,
+		  'description' => 'phone2 of the company',
+	    ),
+	   'contact_name' => array(
+	      'type' => 'varchar',
+		  'length' => 16,
+		  'description' => 'contact name of the company',
+	    ),
+       'tid' => array(
+         'type' => 'int',
+         'unsigned' => TRUE,
+         'not null' => TRUE,
+         'default' => 0,
+         'description' => 'The {taxonomy_term_data}.tid of the youwo term assigned to the node.',
+        ),
+	   ),
+    'primary key' => array('company_id'),
+    'unique key' => array(
+	   'company_name' => array('company_name'),
+	),
+    'indexes' => array(
+      'company_name' => array('company_name'),
+      'company_brief_name' => array('company_brief_name'),
+    ),
+  );
+
+  return $schema;
+}
+
 /**
  * Implements hook_schema().
  */
@@ -544,6 +616,8 @@ function youwo_schema() {
       ),
     ),
   );
+
+  _service_schema($schema);
 
   return $schema;
 }
