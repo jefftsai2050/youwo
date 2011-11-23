@@ -419,6 +419,11 @@ function _service_schema(&$schema) {
 		  'length' => 16,
 		  'description' => 'contact name of the company',
 	    ),
+	   'scale' => array(
+	      'type' => 'int',
+		  'default' => 0,
+		  'description' => 'the company scale',
+	    ),
        'tid' => array(
          'type' => 'int',
          'unsigned' => TRUE,
@@ -436,6 +441,42 @@ function _service_schema(&$schema) {
       'company_brief_name' => array('company_brief_name'),
     ),
   );
+
+  $schema['youwo_household_info'] = array(
+    'description' => 'All household companies attributes information.',
+	'fields' => array(
+	   'company_id' => array(
+	      'type' => 'int',
+		  'unsigned' => TRUE,
+		  'not null' => TRUE,
+		  'description' => 'The id of the company.',
+		),
+		// 知名度，和商誉有关
+	   'popularity' => array(
+	      'type' => 'int',
+		  'default' => 0,
+		  'description' => 'the popularity of the company',
+		),
+		// 专业化程度，是否正规
+	   'professional' => array(
+	      'type' => 'int',
+		  'default' => 0,
+		  'description' => 'whether the company is professional',
+	   ),
+	   // 正面评论数量
+	   'good_comment_no' => array(
+	      'type' => 'int',
+		  'default' => 0,
+		  'description' => 'Good comment count',
+       ),
+	   // 负面评论的数量
+	   'bad_comment_no' => array(
+	      'type' => 'int',
+		  'default' => 0,
+		  'description' => 'Bad comment count',
+	   ),
+	 ),
+	);
 
   return $schema;
 }
