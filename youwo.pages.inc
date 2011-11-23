@@ -30,6 +30,10 @@ function what_it_is_page() {
 	return theme('what_it_is_page', array());
 }
 
+function household() {
+	return theme('household', array());
+}
+
 function youwo_start() {
 	return theme('youwo_start_page', array());
 }

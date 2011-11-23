@@ -66,6 +66,10 @@ function youwo_theme() {
 	  'template' => 'what-it-is-page',
 	  'variables' => array(),
 	),
+	'household' => array(
+	  'template' => 'household',
+	  'variables' => array(),
+	),
     'youwo_list' => array(
       'template' => 'youwo-list',
       'variables' => array('youwos' => NULL, 'parents' => NULL, 'tid' => NULL),
@@ -115,6 +119,13 @@ function youwo_menu() {
   $items['youwo/what_it_is'] = array(
     'title' => '什么是帮我',
 	'page callback' => 'what_it_is_page',
+	'access arguments' => array('access content'),
+    'type' => MENU_CALLBACK,
+	'file' => 'youwo.pages.inc',
+  );
+  $items['youwo/household'] = array(
+    'title' => '家政服务',
+	'page callback' => 'household',
 	'access arguments' => array('access content'),
     'type' => MENU_CALLBACK,
 	'file' => 'youwo.pages.inc',
