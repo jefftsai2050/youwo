@@ -137,14 +137,24 @@ function _youwo_add_menu_link() {
     $menu_link = array(
 	   'link_title' => '发布请求',
 	   'link_path' => 'youwo/create_request',
+	   'menu_name' => 'main-menu',
 	   'module' => 'youwo',
 	);
 	menu_link_save($menu_link);
+
+	$menu_link = array(
+	   'link_title' => '家政服务',
+	   'link_path' => drupal_get_normal_path('youwo/household'),
+	   'module' => 'youwo',
+	);
+	menu_link_save($menu_link);
+
 	menu_cache_clear_all();
 }
 
 function _youwo_remove_menu_link() {
     menu_link_delete(NULL, 'youwo/create_request');
+    menu_link_delete(NULL, 'youwo/household');
 	menu_cache_clear_all();
 }
 
@@ -345,7 +355,7 @@ function youwo_enable() {
 
   _youwo_create_field_and_instance();
 
-//  _youwo_add_menu_link();
+  _youwo_add_menu_link();
 }
 
 /**
