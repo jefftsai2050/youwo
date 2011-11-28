@@ -348,7 +348,6 @@ function youwo_uninstall() {
 
   _youwo_remove_field_and_instance();
   _youwo_uninstall_data();
-  _youwo_remove_menu_link();
 }
 
 function _service_schema(&$schema) {
@@ -446,17 +445,76 @@ function _service_schema(&$schema) {
 		  'default' => 0,
 		  'description' => 'whether the company is professional',
 	   ),
+	   'google_count' => array(
+	   	  'type' => 'int',
+		  'not null' => FALSE,
+		  'description' => 'The search count in google.',
+	   ),
+	   'have_youa' => array(
+	      'type' => 'int',
+		  'default' => 0,
+		  'description' => 'whether there is info in youa.',
+	   ),
+
 	   // 正面评论数量
-	   'good_comment_no' => array(
+	   'youa_good_comment' => array(
 	      'type' => 'int',
 		  'default' => 0,
 		  'description' => 'Good comment count',
        ),
 	   // 负面评论的数量
-	   'bad_comment_no' => array(
+	   'youa_bad_comment' => array(
 	      'type' => 'int',
 		  'default' => 0,
 		  'description' => 'Bad comment count',
+	   ),
+	   'youa_links' => array(
+	      'type' => 'varchar',
+          'length' => 255,
+		  'not null' => FALSE,
+		  'description' => 'links at youa',
+	   ),
+	   'have_tongcheng' => array(
+	      'type' => 'int',
+		  'default' => 0,
+		  'description' => 'whether there are comments in 58tongcheng.',
+	   ),
+	   'tongcheng_good_comment' => array(
+	      'type' => 'int',
+		  'default' => 0,
+		  'description' => 'good comments count in 58 tongcheng.',
+	   ),
+	   'tongcheng_bad_comment' => array(
+	      'type' => 'int',
+		  'default' => 0,
+		  'description' => 'bad comments count in 58 tongcheng.',
+	   ),
+	   'tongcheng_links' => array(
+	      'type' => 'varchar',
+          'length' => 255,
+		  'not null' => FALSE,
+		  'description' => 'links at youa',
+	   ),
+	   'have_koubei' => array(
+	      'type' => 'int',
+		  'default' => 0,
+		  'description' => 'whether there are comments in koubei.',
+	   ),
+	   'koubei_good_comment' => array(
+	      'type' => 'int',
+		  'default' => 0,
+		  'description' => 'good comments count in koubei.',
+	   ),
+	   'koubei_bad_comment' => array(
+	      'type' => 'int',
+		  'default' => 0,
+		  'description' => 'bad comments count in koubei.',
+	   ),
+	   'koubei_links' => array(
+	      'type' => 'varchar',
+          'length' => 255,
+		  'not null' => FALSE,
+		  'description' => 'links at youa',
 	   ),
 	 ),
 	);
