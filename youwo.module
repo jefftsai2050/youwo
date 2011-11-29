@@ -130,6 +130,16 @@ function youwo_menu() {
     'type' => MENU_CALLBACK,
 	'file' => 'youwo.pages.inc',
   );
+
+  $items['youwo/household_info'] = array(
+    'title' => '家政公司信息',
+	'page callback' => 'household_info',
+	'page arguments' => array(),
+	'access arguments' => array('access content'),
+	'type' => MENU_CALLBACK,
+	'file' => 'household.pages.inc',
+  );
+
   $items['youwo/start_page'] = array(
      'title' => '开始',
 	 'page callback' => 'youwo_start',

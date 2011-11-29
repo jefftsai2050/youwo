@@ -517,6 +517,7 @@ function _service_schema(&$schema) {
 		  'description' => 'links at youa',
 	   ),
 	 ),
+     'primary key' => array('company_id'),
 	);
 
   return $schema;
