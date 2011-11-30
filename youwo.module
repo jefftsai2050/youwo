@@ -187,6 +187,14 @@ function youwo_menu() {
     'type' => MENU_DEFAULT_LOCAL_TASK,
     'weight' => -10,
   );
+  $items['admin/structure/youwo/install_data'] = array(
+    'title' => 'Install Data',
+	'page callback' => 'youwo_install_data',
+	'page arguments' => array(),
+    'access arguments' => array('administer youwos'),
+	'type' => MENU_LOCAL_ACTION,
+	'file' => 'data.php',
+  );
   $items['admin/structure/youwo/add/container'] = array(
     'title' => 'Add container',
     'page callback' => 'youwo_form_main',
