@@ -424,6 +424,57 @@ function _service_schema(&$schema) {
     ),
   );
 
+  $schema['youwo_household_basic'] =  array(
+    'description' => 'All household companies basic information.',
+	'fields' => array(
+	   'company_id' => array(
+	      'type' => 'int',
+		  'unsigned' => TRUE,
+		  'not null' => TRUE,
+		  'description' => 'The id of the company.',
+		),
+	   'is_group' => array(
+	      'type' => 'int',
+		  'unsigned' => TRUE,
+		  'not null' => TRUE,
+		  'description' => 'Whether it has a group.',
+		),
+	   'subgroup_cnt' => array(
+	      'type' => 'int',
+		  'unsigned' => TRUE,
+		  'not null' => TRUE,
+		  'default' => 0,
+		  'description' => 'count of subsite.',
+		),
+		'have_website' => array(
+	      'type' => 'int',
+		  'unsigned' => TRUE,
+		  'not null' => TRUE,
+		  'description' => 'Whether it has a website.',
+		),
+		'website_addr' => array(
+	      'type' => 'varchar',
+          'length' => 255,
+		  'not null' => FALSE,
+		  'description' => 'links at youa',
+		),
+		'servie_type' => array(
+	      'type' => 'int',
+		  'unsigned' => TRUE,
+		  'not null' => TRUE,
+		  'description' => 'Whether it has a website.',
+		),
+		'ave_price' => array(
+		  'type' => 'int',
+		  'unsigned' => TRUE,
+		  'not null' => TRUE,
+		  'default' => 0,
+		  'description' => 'The average price.',
+		),
+	   ),
+       'primary key' => array('company_id'),
+   );
+
   $schema['youwo_household_info'] = array(
     'description' => 'All household companies attributes information.',
 	'fields' => array(
@@ -433,88 +484,34 @@ function _service_schema(&$schema) {
 		  'not null' => TRUE,
 		  'description' => 'The id of the company.',
 		),
-		// 知名度，和商誉有关
-	   'popularity' => array(
-	      'type' => 'int',
-		  'default' => 0,
-		  'description' => 'the popularity of the company',
-		),
-		// 专业化程度，是否正规
-	   'professional' => array(
-	      'type' => 'int',
-		  'default' => 0,
-		  'description' => 'whether the company is professional',
-	   ),
-	   'google_count' => array(
+	   'google_cnt' => array(
 	   	  'type' => 'int',
-		  'not null' => FALSE,
+		  'not null' => TRUE,
 		  'description' => 'The search count in google.',
 	   ),
-	   'have_youa' => array(
-	      'type' => 'int',
-		  'default' => 0,
-		  'description' => 'whether there is info in youa.',
+	   'baidu_cnt' => array(
+	   	  'type' => 'int',
+		  'not null' => TRUE,
+		  'description' => 'The search count in baidu.',
 	   ),
-
 	   // 正面评论数量
-	   'youa_good_comment' => array(
+	   'good_comment_cnt' => array(
 	      'type' => 'int',
+		  'not null' => TRUE,
 		  'default' => 0,
 		  'description' => 'Good comment count',
        ),
 	   // 负面评论的数量
-	   'youa_bad_comment' => array(
+	   'bad_comment_cnt' => array(
 	      'type' => 'int',
-		  'default' => 0,
+		  'not null' => TRUE,
 		  'description' => 'Bad comment count',
 	   ),
-	   'youa_links' => array(
+	   'comment_links' => array(
 	      'type' => 'varchar',
-          'length' => 255,
+          'length' => 2048,
 		  'not null' => FALSE,
-		  'description' => 'links at youa',
-	   ),
-	   'have_tongcheng' => array(
-	      'type' => 'int',
-		  'default' => 0,
-		  'description' => 'whether there are comments in 58tongcheng.',
-	   ),
-	   'tongcheng_good_comment' => array(
-	      'type' => 'int',
-		  'default' => 0,
-		  'description' => 'good comments count in 58 tongcheng.',
-	   ),
-	   'tongcheng_bad_comment' => array(
-	      'type' => 'int',
-		  'default' => 0,
-		  'description' => 'bad comments count in 58 tongcheng.',
-	   ),
-	   'tongcheng_links' => array(
-	      'type' => 'varchar',
-          'length' => 255,
-		  'not null' => FALSE,
-		  'description' => 'links at youa',
-	   ),
-	   'have_koubei' => array(
-	      'type' => 'int',
-		  'default' => 0,
-		  'description' => 'whether there are comments in koubei.',
-	   ),
-	   'koubei_good_comment' => array(
-	      'type' => 'int',
-		  'default' => 0,
-		  'description' => 'good comments count in koubei.',
-	   ),
-	   'koubei_bad_comment' => array(
-	      'type' => 'int',
-		  'default' => 0,
-		  'description' => 'bad comments count in koubei.',
-	   ),
-	   'koubei_links' => array(
-	      'type' => 'varchar',
-          'length' => 255,
-		  'not null' => FALSE,
-		  'description' => 'links at youa',
+		  'description' => 'all links',
 	   ),
 	 ),
      'primary key' => array('company_id'),
