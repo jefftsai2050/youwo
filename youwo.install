@@ -458,7 +458,7 @@ function _service_schema(&$schema) {
 		  'not null' => FALSE,
 		  'description' => 'links at youa',
 		),
-		'servie_type' => array(
+		'service_type' => array(
 	      'type' => 'int',
 		  'unsigned' => TRUE,
 		  'not null' => TRUE,
