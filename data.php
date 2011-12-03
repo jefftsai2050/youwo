@@ -57,7 +57,40 @@ function insert_household_basic()
 	return;
 }
 
+function insert_household_info()
+{
+	$household_info = array(
+		array( 'company_id' => 1,
+		       'google_cnt' => 1030000, 
+			   'baidu_cnt' => 296000,
+			   'good_comment_cnt' => 0,
+			   'bad_comment_cnt' => 0,
+			 ),
+		array( 'company_id' => 2,
+		       'google_cnt' => 11700000, 
+			   'baidu_cnt' => 36600,
+			   'good_comment_cnt' => 0,
+			   'bad_comment_cnt' => 0,
+			 ),
+	);
+
+	foreach ($household_info as $row) {
+		$id = db_insert('youwo_household_info')
+		   ->fields(array(
+		     'company_id' => $row['company_id'],
+		     'google_cnt' => $row['google_cnt'],
+		     'baidu_cnt' => $row['baidu_cnt'],
+		     'good_comment_cnt' => $row['good_comment_cnt'],
+		     'bad_comment_cnt' => $row['bad_comment_cnt'],
+			 ))
+		   ->execute();
+	}
+}
+
 function remove_data() {
+   $num_deleted = db_delete('youwo_household_info')
+       ->execute();
+
    $num_deleted = db_delete('youwo_household_basic')
        ->execute();
 
@@ -65,11 +98,10 @@ function remove_data() {
        ->execute();
 }
 	
-
-
 function youwo_install_data() {
 	remove_data();
 	insert_youwo_company();
 	insert_household_basic();
+	insert_household_info();
 	return "";
 }
