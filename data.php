@@ -8,15 +8,12 @@ function insert_youwo_company() {
 		array('company_name' => '北京市泰维峰家政公司',
 		      'company_brief_name' => '泰维峰家政',
 			  'tid' => 0),
-	    );
 		array('company_name' => '北京嘉乐会家政服务有限公司',
 		      'company_brief_name' => '嘉乐会家政',
 			  'tid' => 0),
-	    );
 		array('company_name' => '北京华夏中青家政服务有限公司',
 		      'company_brief_name' => '华夏中青家政',
 			  'tid' => 0),
-	    );
 		array('company_name' => '北京市春光家美家政服务公司',
 		      'company_brief_name' => '春光家美家政',
 			  'tid' => 0),
