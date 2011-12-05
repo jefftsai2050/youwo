@@ -34,6 +34,10 @@ function household() {
 return theme('household', array());
 }
 
+function kindergarten() {
+	return theme('kindergarten', array());
+}
+
 function youwo_start() {
 return theme('youwo_start_page', array());
 }

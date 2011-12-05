@@ -70,6 +70,10 @@ function youwo_theme() {
 	  'template' => 'household',
 	  'variables' => array(),
 	),
+	'kindergarten' => array(
+	  'template' => 'kindergarten',
+	  'variables' => array(),
+	),
     'youwo_list' => array(
       'template' => 'youwo-list',
       'variables' => array('youwos' => NULL, 'parents' => NULL, 'tid' => NULL),
@@ -126,6 +130,13 @@ function youwo_menu() {
   $items['youwo/household'] = array(
     'title' => '家政服务',
 	'page callback' => 'household',
+	'access arguments' => array('access content'),
+    'type' => MENU_CALLBACK,
+	'file' => 'youwo.pages.inc',
+  );
+  $items['youwo/kindergarten'] = array(
+    'title' => '幼儿教育',
+	'page callback' => 'kindergarten',
 	'access arguments' => array('access content'),
     'type' => MENU_CALLBACK,
 	'file' => 'youwo.pages.inc',
